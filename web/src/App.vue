@@ -266,6 +266,7 @@ const titles = {
   edit: "剪辑准备",
   delivery: "成片与交付",
   retro: "数据复盘",
+  compare: "跨视频对比",
   settings: "设置与模型档案",
   costs: "预算与费用流水",
   library: "全局数字资产库",
@@ -283,6 +284,7 @@ const subtitles = {
   edit: "把选用镜头、声音要求和字幕，一起带到剪映。",
   delivery: "回传剪映成片，完成检测、试听和交付归档。",
   retro: "看懂哪里留住了观众，把观察变成下一条实验。",
+  compare: "并列查看真实指标与统计窗口，追踪每一条单变量实验。",
   settings: "模型能力以官网核对为准，文本 AI 单独配置。",
   costs: "实际花费来自逐条记账，估算与待核价费用分别标明。",
   projects: "所有猫咪故事，都从一份清晰的创作简报开始。",
@@ -301,9 +303,14 @@ const types = [
 const typeLabel = (t) => types.find((x) => x.value === t)?.label || t;
 const projectRequired = computed(
   () =>
-    !["dashboard", "projects", "settings", "costs", "library"].includes(
-      page.value,
-    ),
+    ![
+      "dashboard",
+      "projects",
+      "settings",
+      "costs",
+      "library",
+      "compare",
+    ].includes(page.value),
 );
 const activeModels = computed(() =>
   list("model_profile").filter((x) => x.data.kind === "video"),
@@ -590,6 +597,28 @@ function screenshotForm() {
       });
       if (v.recognize) await askAI("screenshot", { reference_id: r.id }, f.id);
     },
+  );
+}
+function reuseTopic() {
+  openForm(
+    "从选题库复用方向",
+    [
+      field("direction_id", "选题方向", "select", {
+        required: true,
+        options: list("story_direction")
+          .filter((x) => x.data.in_library)
+          .map((x) => ({
+            value: x.id,
+            label:
+              x.name +
+              " · " +
+              (byId("project", x.project_id)?.name || "历史项目"),
+          })),
+      }),
+    ],
+    {},
+    (v) => api("/projects/" + projectId.value + "/reuse-direction", "POST", v),
+    "复制方向及其引用的素材/评论，保留原始出处；复用后由你重新选择与确认。",
   );
 }
 function directionForm(obj) {
@@ -2778,6 +2807,9 @@ onBeforeUnmount(() => {
                 <button class="full-width dashed" @click="directionForm()">
                   <Plus :size="16" />新增自己的选题
                 </button>
+                <button class="full-width" @click="reuseTopic">
+                  <BookOpen :size="15" />从选题库复用
+                </button>
                 <article
                   v-for="d in own('story_direction')"
                   :key="d.id"
@@ -2823,6 +2855,27 @@ onBeforeUnmount(() => {
                   </dl>
                   <button class="text-btn" @click="directionForm(d)">
                     <NotebookPen :size="14" />编辑方向
+                  </button>
+                  <button
+                    class="text-btn"
+                    @click="
+                      act(
+                        () =>
+                          save(
+                            'story_direction',
+                            {
+                              data: {
+                                ...d.data,
+                                in_library: !d.data.in_library,
+                              },
+                            },
+                            d.id,
+                          ),
+                        d.data.in_library ? '已移出选题库' : '已加入选题库',
+                      )
+                    "
+                  >
+                    {{ d.data.in_library ? "移出选题库" : "加入选题库" }}
                   </button>
                 </article>
                 <div class="hint">
@@ -4427,6 +4480,7 @@ onBeforeUnmount(() => {
                 >
                   {{ m.data.period }} · {{ date(m.created_at) }}
                 </option></select
+              ><button @click="nav('compare')">跨视频对比</button
               ><button class="push-right" @click="releaseForm">
                 <Plus :size="15" />登记发布</button
               ><button class="primary" @click="csvForm">
@@ -4938,6 +4992,125 @@ onBeforeUnmount(() => {
             </section></template
           >
 
+          <template v-if="page === 'compare'">
+            <section class="panel">
+              <div class="panel-title">
+                <h2>发布版本指标对照</h2>
+                <span class="pill amber"
+                  >按平台与统计窗口对照，不跨口径排名</span
+                ><button class="text-btn push-right" @click="nav('projects')">
+                  返回项目
+                </button>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>项目 / 成片</th>
+                      <th>平台</th>
+                      <th>统计窗口</th>
+                      <th>播放</th>
+                      <th>3 秒留存</th>
+                      <th>完播率</th>
+                      <th>平均观看</th>
+                      <th>下一条实验</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="m in list('metric_snapshot').filter(
+                        (x) =>
+                          !search ||
+                          byId('project', x.project_id)?.name.includes(search),
+                      )"
+                      :key="m.id"
+                    >
+                      <td>
+                        <b>{{
+                          byId("project", m.project_id)?.name || "历史项目"
+                        }}</b
+                        ><small>发布 {{ m.parent_id?.slice(0, 8) }}</small>
+                      </td>
+                      <td>{{ byId("release", m.parent_id)?.name }}</td>
+                      <td>{{ m.data.period }}</td>
+                      <td>{{ m.data.plays ?? "未提供" }}</td>
+                      <td>
+                        {{
+                          m.data.retain_3s == null
+                            ? "未提供"
+                            : (m.data.retain_3s * 100).toFixed(1) + "%"
+                        }}
+                      </td>
+                      <td>
+                        {{
+                          m.data.completion == null
+                            ? "未提供"
+                            : (m.data.completion * 100).toFixed(1) + "%"
+                        }}
+                      </td>
+                      <td>{{ m.data.avg_watch_s ?? "未提供" }}</td>
+                      <td>
+                        {{
+                          list("retro", m.project_id).at(-1)?.data.exp_change ||
+                          "待复盘"
+                        }}
+                      </td>
+                      <td>
+                        <button
+                          @click="
+                            nav('retro', m.project_id);
+                            metricSnapshotId = m.id;
+                            releaseId = m.parent_id;
+                          "
+                        >
+                          查看复盘
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div v-if="!list('metric_snapshot').length" class="empty large">
+                <ChartNoAxesCombined :size="36" />
+                <p>还没有真实指标。先在项目复盘中导入平台 CSV。</p>
+              </div>
+            </section>
+            <section class="panel">
+              <div class="panel-title"><h2>单变量实验记录</h2></div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>项目</th>
+                    <th>验证目标</th>
+                    <th>保持不变</th>
+                    <th>尝试修改</th>
+                    <th>结论状态</th>
+                    <th>下一条</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="r in list('retro')" :key="r.id">
+                    <td>
+                      {{ byId("project", r.project_id)?.name || "历史项目" }}
+                    </td>
+                    <td>{{ r.data.exp_goal }}</td>
+                    <td>{{ r.data.exp_keep }}</td>
+                    <td>{{ r.data.exp_change }}</td>
+                    <td>
+                      <span class="pill">{{ r.status }}</span>
+                    </td>
+                    <td>
+                      {{
+                        byId("project", r.data.next_project_id)?.name ||
+                        "未创建"
+                      }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+          </template>
           <template v-if="page === 'costs'"
             ><div class="two-col">
               <section class="panel">

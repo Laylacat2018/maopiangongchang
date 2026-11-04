@@ -226,3 +226,13 @@ def test_16_bad_final_is_not_publishable(client,production,media_files):
     c=client;p=production;clip=upload(c,media_files[1]);f=post(c,f'/projects/{p["pid"]}/finals',{'file_id':clip['id'],'edit_package_id':p['edit']['id'],'edit_version':'bad','platform_variant':'主版'});wait(c,f['task_id'])
     fc=next(x for x in state(c)['final_cut'] if x['id']==f['id']);assert not fc['data']['auto_checks']['passed']
     assert c.post('/api/finals/'+f['id']+'/confirm',json={'checks':dict.fromkeys(['motion','audio','subtitle'],True)}).status_code in [409,422]
+
+def test_17_topic_library_reuse_preserves_evidence(client,production):
+    c=client;p=production
+    source=next(x for x in state(c)['story_direction'] if x['project_id']==p['pid'])
+    put(c,'story_direction',source,data={**source['data'],'in_library':True})
+    nextp=post(c,'/projects',{'name':'选题库复用自测','source_project_id':p['pid']})
+    d=post(c,f'/projects/{nextp["id"]}/reuse-direction',{'direction_id':source['id']})
+    assert not d['data']['is_selected'];assert d['data']['origin_direction_id']==source['id']
+    refs=state(c)['reference'];ref=next(x for x in refs if x['id']==d['data']['cited_reference_ids'][0]);assert ref['project_id']==nextp['id'];assert ref['data']['origin_reference_id']==source['data']['cited_reference_ids'][0]
+    b=next(x for x in state(c)['brief'] if x['project_id']==nextp['id']);assert '城市上班族' in b['data']['audience']

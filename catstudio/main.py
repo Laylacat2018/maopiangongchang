@@ -97,7 +97,7 @@ def validate_save(s,kind,obj,data,is_new):
         if d.get('is_selected'):
             for other in rows(s,kind,obj.project_id):
                 if other.id!=obj.id:other.data={**other.data,'is_selected':False}
-        if not is_new:svc.invalidate(s,obj.project_id,2,'选题已修改')
+        if not is_new and data.get('_semantic_change',True):svc.invalidate(s,obj.project_id,2,'选题已修改')
     if kind=='script':
         if obj.status=='confirmed' and not d.get('summary','').strip():svc.fail('剧情稿不能为空')
         if not is_new:svc.invalidate(s,obj.project_id,3,'剧情稿已修改')
@@ -195,7 +195,9 @@ def update(kind:str,id:str,body:dict):
                 for sh in svc.shots(s,obj.id):svc.reset_shot(s,sh,'项目模型或生成参数已变化')
             if old_data.get('srt')!=obj.data.get('srt') or old_data.get('edit_notes')!=obj.data.get('edit_notes'):
                 svc.invalidate(s,obj.id,6,'剪辑字幕或说明已变化')
-        validate_save(s,kind,obj,body,False);touch(obj);s.commit();return jsonable(obj)
+        validation_body=dict(body)
+        if kind=='story_direction':validation_body['_semantic_change']=any(old_data.get(k)!=obj.data.get(k) for k in ['title','resonance','cat_acting','emotion_landing','cited_reference_ids','cited_evidence_ids','is_selected'])
+        validate_save(s,kind,obj,validation_body,False);touch(obj);s.commit();return jsonable(obj)
 
 @app.delete('/api/items/{kind}/{id}')
 def soft_delete(kind:str,id:str):
@@ -406,6 +408,25 @@ def comments_csv(id:str,body:dict):
             except (ValueError,TypeError):svc.fail('评论点赞列包含非数字')
             add(s,'evidence',project_id=id,name=content[:20],data={'text':content,'likes':likes,'source':'CSV','import_hash':fingerprint});existing.add(fingerprint);count+=1
         s.commit();return {'imported':count}
+
+@app.post('/api/projects/{id}/reuse-direction')
+def reuse_direction(id:str,body:dict):
+    with Session(engine) as s:
+        get(s,'project',id);source=get(s,'story_direction',body['direction_id'])
+        if not source.data.get('in_library'):svc.fail('该方向尚未加入选题库')
+        refmap={};evmap={}
+        ref_ids=set(source.data.get('cited_reference_ids',[]))
+        for eid in source.data.get('cited_evidence_ids',[]):
+            ev=get(s,'evidence',eid)
+            if ev.parent_id:ref_ids.add(ev.parent_id)
+        for rid in ref_ids:
+            old=get(s,'reference',rid)
+            obj=add(s,'reference',project_id=id,name=old.name,data={**old.data,'origin_reference_id':old.id,'is_cited':True});refmap[rid]=obj.id
+        for eid in source.data.get('cited_evidence_ids',[]):
+            old=get(s,'evidence',eid)
+            obj=add(s,'evidence',project_id=id,parent_id=refmap.get(old.parent_id),name=old.name,data={**old.data,'origin_evidence_id':old.id});evmap[eid]=obj.id
+        d=add(s,'story_direction',project_id=id,name=source.name,data={**source.data,'origin':'选题库复用','origin_direction_id':source.id,'in_library':False,'is_selected':False,'cited_reference_ids':[refmap[x] for x in source.data.get('cited_reference_ids',[])],'cited_evidence_ids':[evmap[x] for x in source.data.get('cited_evidence_ids',[])]})
+        s.commit();return jsonable(d)
 
 @app.post('/api/projects/{id}/next')
 def next_project(id:str,body:dict):
