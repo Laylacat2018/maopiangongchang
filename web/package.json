@@ -1,0 +1,21 @@
+{
+  "name": "catstudio-web",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "echarts": "^5.6.0",
+    "element-plus": "^2.11.0",
+    "lucide-vue-next": "^0.468.0",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.0",
+    "prettier": "^3.9.10",
+    "vite": "^6.0.0"
+  }
+}
