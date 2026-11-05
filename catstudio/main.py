@@ -9,6 +9,7 @@ from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from sqlmodel import Session, select
 from .db import *
+from . import __version__
 from . import storage, media, services as svc, llm, tasks
 
 @asynccontextmanager
@@ -35,7 +36,7 @@ async def lifespan(app):
     tasks.stop_event.set()
     worker_thread.join(timeout=3)
 
-app=FastAPI(title='猫片工场',version='1.0.0',lifespan=lifespan)
+app=FastAPI(title='猫片工场',version=__version__,lifespan=lifespan)
 
 @app.middleware('http')
 async def local_only(request,call_next):
@@ -55,7 +56,7 @@ async def local_only(request,call_next):
 def invalid(request,exc):return JSONResponse({'detail':str(exc)},status_code=422)
 
 @app.get('/api/health')
-def health():return {'app_id':'catstudio','status':'ok','version':'1.0.0','ffmpeg':bool(shutil.which('ffmpeg')),'ffprobe':bool(shutil.which('ffprobe')),'mode':'manual','data_dir':str(DATA)}
+def health():return {'app_id':'catstudio','status':'ok','version':__version__,'ffmpeg':bool(shutil.which('ffmpeg')),'ffprobe':bool(shutil.which('ffprobe')),'mode':'manual','data_dir':str(DATA)}
 
 @app.get('/api/state')
 def state():

@@ -1,21 +1,30 @@
 """一条命令安装依赖、构建前端并启动本地工作台；服务在后台运行。"""
-import json, os, socket, subprocess, sys, time, urllib.request, webbrowser
+import hashlib, json, os, socket, subprocess, sys, time, urllib.request, webbrowser
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent
 PORT=int(os.environ.get('CATSTUDIO_PORT','8776'))
 PY=ROOT/'.venv'/('Scripts/python.exe' if os.name=='nt' else 'bin/python')
 def command(args,cwd=ROOT):subprocess.run([str(x) for x in args],cwd=cwd,check=True)
 def main():
+    deps=ROOT/('requirements-lock.txt' if (ROOT/'requirements-lock.txt').exists() else 'requirements.txt')
+    deps_hash=hashlib.sha256(deps.read_bytes()).hexdigest()
+    deps_stamp=ROOT/'.venv'/'catstudio-requirements.sha256'
     if not PY.exists():
         print('正在创建 Python 虚拟环境…')
         command([sys.executable,'-m','venv',ROOT/'.venv'])
-        command([PY,'-m','pip','install','-r','requirements.txt'])
     check=subprocess.run([str(PY),'-c','import fastapi,uvicorn,sqlmodel,huey,PIL,pandas,httpx,cryptography,keyring,jinja2,multipart'],capture_output=True)
-    if check.returncode:command([PY,'-m','pip','install','-r','requirements.txt'])
+    if check.returncode or not deps_stamp.exists() or deps_stamp.read_text()!=deps_hash:
+        command([PY,'-m','pip','install','-r',deps])
+        deps_stamp.write_text(deps_hash)
     web=ROOT/'web';dist=web/'dist/index.html'
     npm='npm.cmd' if os.name=='nt' else 'npm'
-    if not (web/'node_modules').exists():command([npm,'ci','--no-audit','--no-fund'],web)
-    if not dist.exists() or max(p.stat().st_mtime for p in (web/'src').rglob('*') if p.is_file())>dist.stat().st_mtime:
+    lock_hash=hashlib.sha256((web/'package-lock.json').read_bytes()).hexdigest()
+    lock_stamp=web/'node_modules'/'.catstudio-lock.sha256'
+    if not lock_stamp.exists() or lock_stamp.read_text()!=lock_hash:
+        command([npm,'ci','--no-audit','--no-fund'],web)
+        lock_stamp.write_text(lock_hash)
+    build_inputs=[p for p in (web/'src').rglob('*') if p.is_file()]+[web/'package.json',web/'package-lock.json',web/'vite.config.js',web/'index.html']
+    if not dist.exists() or max(p.stat().st_mtime for p in build_inputs)>dist.stat().st_mtime:
         command([npm,'run','build'],web)
     url=f'http://127.0.0.1:{PORT}'
     try:
