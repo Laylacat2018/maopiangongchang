@@ -1,0 +1,9 @@
+# Use only when this server does not already have an HTTP/HTTPS gateway.
+{$CATSTUDIO_DOMAIN:maopian.migucomi.com} {
+    encode zstd gzip
+    request_body {
+        max_size 2048MB
+    }
+    reverse_proxy app:8776
+    header Strict-Transport-Security "max-age=31536000"
+}

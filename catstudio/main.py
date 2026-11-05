@@ -10,10 +10,13 @@ from fastapi.staticfiles import StaticFiles
 from sqlmodel import Session, select
 from .db import *
 from . import __version__
-from . import storage, media, services as svc, llm, tasks
+from . import storage, media, services as svc, llm, tasks, security
 
 @asynccontextmanager
 async def lifespan(app):
+    app.state.access_auth=security.validate_server_config()
+    if os.environ.get('CATSTUDIO_MASTER_KEY_FILE'):
+        llm.fernet()  # Fail before serving requests if the persistent master key is invalid.
     init()
     with Session(engine) as s:
         llm.seed(s)
@@ -39,17 +42,24 @@ async def lifespan(app):
 app=FastAPI(title='猫片工场',version=__version__,lifespan=lifespan)
 
 @app.middleware('http')
-async def local_only(request,call_next):
-    host=request.headers.get('host','').split(':')[0]
-    if host not in ['localhost','127.0.0.1','testserver']:
-        return JSONResponse({'detail':'仅允许本机访问'},status_code=403)
+async def access_control(request,call_next):
+    hosts=security.allowed_hosts()
+    try:host=urlparse('//'+request.headers.get('host','')).hostname
+    except ValueError:host=None
+    if host not in hosts:
+        return JSONResponse({'detail':'访问主机未获允许'},status_code=403)
+    cfg=getattr(app.state,'access_auth',None)
+    if not security.authorized(request.headers.get('authorization',''),cfg):
+        return JSONResponse({'detail':'请登录猫片工场'},status_code=401,headers={'WWW-Authenticate':'Basic realm="CatStudio", charset="UTF-8"','Cache-Control':'no-store'})
     origin=request.headers.get('origin')
     if request.method not in ['GET','HEAD','OPTIONS'] and origin:
-        parsed=urlparse(origin)
-        if parsed.hostname not in ['localhost','127.0.0.1','testserver']:
+        if not security.valid_origin(origin,hosts):
             return JSONResponse({'detail':'拒绝跨站写入请求'},status_code=403)
     response=await call_next(request)
     response.headers['X-Content-Type-Options']='nosniff'
+    response.headers['X-Frame-Options']='DENY'
+    response.headers['Referrer-Policy']='same-origin'
+    response.headers['Cache-Control']='no-store'
     return response
 
 @app.exception_handler(ValueError)

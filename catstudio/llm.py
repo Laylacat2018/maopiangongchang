@@ -1,4 +1,5 @@
-import json, re
+import json, re, os, threading
+from pathlib import Path
 from typing import Any
 import httpx, keyring
 from cryptography.fernet import Fernet
@@ -35,7 +36,22 @@ class Tags(BaseModel):comments:list[dict]
 class Retro(BaseModel):observation:str;hypothesis:str;evidence:str;exp_goal:str;exp_keep:str;exp_change:str
 SCHEMAS={'directions':Directions,'script':Script,'storyboard':Storyboard,'screenshot':Screenshot,'comment_tags':Tags,'retro':Retro}
 
+_key_lock=threading.Lock()
+
 def fernet():
+    path=os.environ.get('CATSTUDIO_MASTER_KEY_FILE')
+    if path:
+        from .security import read_private_file
+        path=Path(path)
+        with _key_lock:
+            path.parent.mkdir(parents=True,exist_ok=True,mode=0o700)
+            try:
+                fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+            except FileExistsError:pass
+            else:
+                with os.fdopen(fd,'wb') as f:
+                    f.write(Fernet.generate_key());f.flush();os.fsync(f.fileno())
+            return Fernet(read_private_file(path).encode())
     # Master key never enters the database or backups; Windows Credential Manager.
     key=keyring.get_password('CatStudio','master-key')
     if not key:

@@ -1,0 +1,57 @@
+name: Domain deployment verification
+on:
+  push:
+    branches: [feature/domain-deployment]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - name: Install runner verification tools
+        run: |
+          sudo apt-get update && sudo apt-get install -y ffmpeg
+          python -m pip install -r requirements-lock.txt
+      - name: Run business and server access tests
+        run: python -m pytest tests -q --junitxml=tests/output/server-unit.xml
+      - name: Build production container
+        run: docker compose -f deploy/compose.yaml build
+      - name: Create isolated synthetic owner credentials
+        run: |
+          mkdir -p tests/output
+          python - <<'PY'
+          import json,secrets
+          from pathlib import Path
+          p=Path('tests/output/owner.json')
+          p.write_text(json.dumps({'username':'admin','password':secrets.token_urlsafe(32)}))
+          p.chmod(0o600)
+          PY
+          python -c 'import json; print(json.load(open("tests/output/owner.json"))["password"])' | docker compose -f deploy/compose.yaml run --rm -T --no-deps app python scripts/create_server_auth.py --file /var/lib/catstudio/secrets/access.json --stdin
+      - name: Run container over real authenticated HTTP
+        run: |
+          docker compose -f deploy/compose.yaml up -d --no-build
+          python scripts/smoke_server.py --url http://127.0.0.1:8776 --credentials tests/output/owner.json --evidence tests/output/server-smoke.json
+      - name: Verify data and secrets survive restart
+        run: |
+          docker compose -f deploy/compose.yaml exec -T app python -c 'from catstudio.llm import decrypt,encrypt; from pathlib import Path; Path("/var/lib/catstudio/data/key-check.txt").write_text(encrypt("synthetic-restart-check"))'
+          docker compose -f deploy/compose.yaml restart app
+          python scripts/smoke_server.py --url http://127.0.0.1:8776 --credentials tests/output/owner.json --evidence tests/output/server-smoke.json --resume
+          docker compose -f deploy/compose.yaml exec -T app python -c 'from catstudio.llm import decrypt; from pathlib import Path; assert decrypt(Path("/var/lib/catstudio/data/key-check.txt").read_text())=="synthetic-restart-check"; print("Persistent master key verified")'
+      - name: Preserve non-sensitive results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: domain-verification-${{ github.sha }}
+          path: |
+            tests/output/server-unit.xml
+            tests/output/server-smoke.json
+      - name: Stop isolated containers
+        if: always()
+        run: docker compose -f deploy/compose.yaml down

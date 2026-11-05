@@ -1,0 +1,33 @@
+name: catstudio
+services:
+  app:
+    image: ${CATSTUDIO_IMAGE:-catstudio:local}
+    build:
+      context: ..
+    restart: unless-stopped
+    init: true
+    environment:
+      CATSTUDIO_ALLOWED_HOSTS: ${CATSTUDIO_DOMAIN:-maopian.migucomi.com},localhost,127.0.0.1
+      CATSTUDIO_MASTER_KEY_FILE: /var/lib/catstudio/secrets/master.key
+      CATSTUDIO_AUTH_FILE: /var/lib/catstudio/secrets/access.json
+    ports:
+      - "127.0.0.1:${CATSTUDIO_PORT:-8776}:8776"
+    volumes:
+      - data:/var/lib/catstudio/data
+      - secrets:/var/lib/catstudio/secrets
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+    mem_limit: 1200m
+    cpus: 1.5
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+volumes:
+  data:
+  secrets:
