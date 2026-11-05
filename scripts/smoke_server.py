@@ -36,7 +36,10 @@ def main():
         with httpx.Client(base_url=args.url,timeout=20) as anon:
             for path in ['/','/api/health','/api/state','/docs','/files/unknown']:
                 assert anon.get(path).status_code==401,path
-        assert c.get('/api/state',headers={'Host':'evil.example'}).status_code==403
+        wrong_host=c.get('/api/state',headers={'Host':'evil.example'})
+        # A shared Caddy gateway can return an empty unmatched-host response;
+        # the application itself returns 403. Neither may expose application data.
+        assert wrong_host.status_code in {403,404,421} or (wrong_host.status_code==200 and not wrong_host.content)
         assert c.post('/api/projects',json={'name':'must-not-exist'},headers={'Origin':'https://evil.example'}).status_code==403
         if args.resume:
             saved=json.loads(Path(args.evidence).read_text())

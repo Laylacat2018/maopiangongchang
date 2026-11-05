@@ -1,0 +1,67 @@
+{
+  "health": {
+    "app_id": "catstudio",
+    "status": "ok",
+    "version": "1.0.1",
+    "ffmpeg": true,
+    "ffprobe": true,
+    "mode": "manual"
+  },
+  "clean_production": {
+    "projects": 0,
+    "tasks": 0,
+    "llm_settings": []
+  },
+  "frontend_assets": {
+    "/assets/index-pOIcCcS8.js": {
+      "bytes": 818053,
+      "mime": "text/javascript; charset=utf-8"
+    },
+    "/assets/index-B8uj3aPV.css": {
+      "bytes": 395826,
+      "mime": "text/css; charset=utf-8"
+    }
+  },
+  "cross_site_write": 403,
+  "security_headers": {
+    "strict-transport-security": "max-age=31536000",
+    "x-frame-options": "DENY",
+    "x-content-type-options": "nosniff",
+    "referrer-policy": "same-origin",
+    "cache-control": "no-store"
+  },
+  "anonymous": {
+    "/": 401,
+    "/api/state": 401,
+    "/docs": 401,
+    "/files/unknown": 401
+  },
+  "wrong_password": 401,
+  "http_redirect": {
+    "status": 308,
+    "location": "https://maopian.migucomi.com/"
+  },
+  "tls": {
+    "version": "TLSv1.3",
+    "notAfter": "Feb  3 06:04:32 2027 GMT",
+    "SAN": [
+      [
+        "DNS",
+        "maopian.migucomi.com"
+      ]
+    ]
+  },
+  "url": "https://maopian.migucomi.com",
+  "app_commit": "88d1725e53462f37e7a5d2255f794fbdd2256ba3",
+  "existing_site_regression": {
+    "tested": 4,
+    "passed": true
+  },
+  "real_domain_workflow": {
+    "all_7_stages": true,
+    "range_206": true,
+    "real_service_restart": true,
+    "master_key_decryption_after_restart": true,
+    "acceptance_data_separate_from_production": true
+  }
+}
