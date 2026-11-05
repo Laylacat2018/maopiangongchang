@@ -51,6 +51,16 @@ Caddy 自动申请和续签证书；其状态持久化在专用卷。访问认�
 
 ## 验收
 
+### 已有 Podman 与 Caddy 的主机
+
+可加载正式 Release 中经过 CI 全流程验证的 Linux amd64 镜像，先用随附 SHA256 文件核对下载。
+镜像不包含认证、主密钥或运行数据。`deploy/catstudio.container` 为 Podman Quadlet 示例，
+通过 systemd 管理重启、开机启动和资源限制；不要另外安装 Docker 覆盖已有容器环境。
+初始化独立的 `catstudio-data`、`catstudio-secrets` 命名卷，确认所有者为 UID/GID 10001，
+运行同一个 `scripts/create_server_auth.py` 初始化认证后再启动服务。
+已有 Caddyfile 中只添加本域名的站点块并代理到 `127.0.0.1:8776`；保存原配置，
+先 `caddy validate`，再平滑 reload；不要使用示例的独占 80/443 Caddy 容器。
+
 1. 未登录访问 `/`、`/api/state`、`/files/...`、`/docs` 均返回 401；不存在可绕过的后端公网端口。
 2. 登录后新建项目、走完 7 阶段；真实合成视频上传、候选检测、审片、剪辑包、成片质检、归档和 CSV 复盘都通过。
 3. 验证视频 `Range` 返回 206、下载 ZIP 完整、外站 Origin 写入和错误 Host 都被拒绝。

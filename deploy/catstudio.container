@@ -1,0 +1,30 @@
+# Podman Quadlet example for an existing Linux/Caddy server.
+# Install to /etc/containers/systemd/catstudio.container after loading the verified image.
+[Unit]
+Description=CatStudio owner workspace
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+Image=localhost/catstudio:1.0.1
+Pull=never
+ContainerName=catstudio
+PublishPort=127.0.0.1:8776:8776
+Environment=CATSTUDIO_ALLOWED_HOSTS=maopian.migucomi.com,localhost,127.0.0.1
+Environment=CATSTUDIO_MASTER_KEY_FILE=/var/lib/catstudio/secrets/master.key
+Environment=CATSTUDIO_AUTH_FILE=/var/lib/catstudio/secrets/access.json
+Volume=catstudio-data:/var/lib/catstudio/data
+Volume=catstudio-secrets:/var/lib/catstudio/secrets
+ReadOnly=true
+Tmpfs=/tmp:rw,size=256m,mode=1777
+DropCapability=all
+NoNewPrivileges=true
+PodmanArgs=--cpus=1.5 --memory=1200m --memory-swap=1800m
+
+[Service]
+Restart=always
+RestartSec=5
+TimeoutStartSec=180
+
+[Install]
+WantedBy=multi-user.target
