@@ -10,7 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlmodel import Session, select
 from .db import *
 from . import __version__
-from . import storage, media, services as svc, llm, tasks, security
+from . import storage, media, services as svc, llm, tasks, security, production
 
 @asynccontextmanager
 async def lifespan(app):
@@ -40,6 +40,7 @@ async def lifespan(app):
     worker_thread.join(timeout=3)
 
 app=FastAPI(title='猫片工场',version=__version__,lifespan=lifespan)
+app.include_router(production.router)
 
 @app.middleware('http')
 async def access_control(request,call_next):
@@ -114,6 +115,17 @@ def validate_save(s,kind,obj,data,is_new):
         if not is_new:svc.invalidate(s,obj.project_id,3,'剧情稿已修改')
     if kind=='shot':
         if obj.duration_s<=0 or obj.duration_s>600:svc.fail('镜头时长必须在 0–600 秒内')
+        if d.get('generation_duration_s') not in (None,''):
+            try:valid_duration=0<float(d['generation_duration_s'])<=600
+            except (ValueError,TypeError):valid_duration=False
+            if not valid_duration:svc.fail('生成时长必须在 0–600 秒内')
+        # Reviews can only be issued by the frame-review operation, never generic edits.
+        previous_data=data.get('_previous_data',{})
+        if not is_new:
+            changed=any(previous_data.get(k)!=d.get(k) for k in ['image_prompt','keyframe_file_id'])
+            obj.data={**obj.data,'keyframe_review':{} if changed else previous_data.get('keyframe_review',{})}
+        else:
+            obj.data={**obj.data,'keyframe_review':{}}
         if not is_new:
             old=selected_before=getattr(obj,'_old_data',None)
             svc.reset_shot(s,obj,'分镜或提示词修改')
@@ -122,6 +134,8 @@ def validate_save(s,kind,obj,data,is_new):
             previous=rows(s,'prompt_version',parent=obj.id)
             if not previous or previous[-1].data.get('body')!=d['prompt']:
                 add(s,'prompt_version',project_id=obj.project_id,parent_id=obj.id,name='视频提示词',version=len(previous)+1,data={'body':d['prompt'],'owner_type':'shot','origin':d.get('origin','用户')})
+        if d.get('image_prompt') and previous_data.get('image_prompt')!=d['image_prompt']:
+            add(s,'prompt_version',project_id=obj.project_id,parent_id=obj.id,name='分镜生图词',version=len(rows(s,'prompt_version',parent=obj.id))+1,data={'body':d['image_prompt'],'owner_type':'shot_image'})
     if kind=='asset':
         if not d.get('code'):
             prefix=d.get('type','CHAR')
@@ -153,6 +167,9 @@ def validate_save(s,kind,obj,data,is_new):
             allowed={'主体':['CHAR'],'场景':['SCN'],'道具':['PROP','PROD'],'声音':['VOICE','SFX','BGM']}
             if asset.data.get('type') not in allowed.get(d.get('slot'),[]):svc.fail('资产类型与素材槽位不匹配：'+str(d.get('slot')))
         svc.reset_shot(s,sh,'镜头素材绑定已更新')
+        if sh.data.get('input_mode')=='first_frame':
+            sh.data={**sh.data,'keyframe_review':{}}
+            svc.invalidate(s,sh.project_id,4,'首帧角色引用变化，请重新审核分镜图')
         if not svc.package_preview(s,sh.id)['errors']:sh.status='ready'
     if kind=='model_profile':
         url=d.get('site_url','')
@@ -207,6 +224,7 @@ def update(kind:str,id:str,body:dict):
             if old_data.get('srt')!=obj.data.get('srt') or old_data.get('edit_notes')!=obj.data.get('edit_notes'):
                 svc.invalidate(s,obj.id,6,'剪辑字幕或说明已变化')
         validation_body=dict(body)
+        validation_body['_previous_data']=old_data
         if kind=='story_direction':validation_body['_semantic_change']=any(old_data.get(k)!=obj.data.get(k) for k in ['title','resonance','cat_acting','emotion_landing','cited_reference_ids','cited_evidence_ids','is_selected'])
         validate_save(s,kind,obj,validation_body,False);touch(obj);s.commit();return jsonable(obj)
 
@@ -300,11 +318,20 @@ def ingest(id:str,body:dict):
         if enhanced:
             parent=get(s,'candidate',enhanced)
             if parent.status!='selected' or parent.parent_id!=id:svc.fail('仅同条记录的已选用候选可回传增强版')
-        c=add(s,'candidate',project_id=record.project_id,parent_id=id,shot_id=record.shot_id,name=body.get('label') or chr(65+len([x for x in rows(s,'candidate',record.project_id) if x.shot_id==record.shot_id])),status='pending',data={'file_id':f.id,'credits':body.get('credits',0),'task_url':body.get('task_url',''),'enhanced_parent_id':enhanced,'analysis_status':'pending','approved':False})
+        credits=body.get('credits')
+        if credits not in (None,''):
+            try:credits=float(credits)
+            except (ValueError,TypeError):svc.fail('积分必须为数字')
+            svc.money(credits)
+        else:credits=None
+        c=add(s,'candidate',project_id=record.project_id,parent_id=id,shot_id=record.shot_id,name=body.get('label') or chr(65+len([x for x in rows(s,'candidate',record.project_id) if x.shot_id==record.shot_id])),status='pending',data={'file_id':f.id,'credits':credits,'task_url':body.get('task_url',''),'enhanced_parent_id':enhanced,'analysis_status':'pending','approved':False})
         model=get(s,'model_profile',record.data['model_id'])
         amount=body.get('amount_cny')
-        if amount is None:amount=float(body.get('credits',0))*float(model.data.get('credit_to_cny') or 0)
-        svc.cost(s,c.project_id,'增强' if enhanced else '视频生成',c.id,amount,body.get('credits',0),model.id)
+        rate=record.data.get('billing_snapshot',model.data).get('credit_to_cny')
+        estimated=amount is None and credits is not None and rate is not None
+        if estimated:amount=credits*float(rate)
+        entry=svc.cost(s,c.project_id,'增强' if enhanced else '视频生成',c.id,amount,credits,model.id)
+        entry.data={**entry.data,'estimated':estimated}
         record.status='returned';sh=get(s,'shot',record.shot_id);sh.status='review'
         s.commit();task=tasks.enqueue(s,'candidate',c.project_id,{'id':c.id});s.refresh(c);return {**jsonable(c),'task_id':task.id}
 
@@ -368,6 +395,7 @@ def ingest_final(id:str,body:dict):
 def confirm_final(id:str,body:dict):
     with Session(engine) as s:
         fc=get(s,'final_cut',id);auto=fc.data.get('auto_checks',{})
+        if get(s,'project',fc.project_id).data.get('production_workflow') and svc.gate_errors(s,fc.project_id,5):svc.fail('镜头选用或输入已变化，请重新审核当前素材与成片',409)
         ep=get(s,'edit_package',fc.parent_id)
         for item in ep.data.get('manifest',[]):
             chosen=svc.selected(s,item['shot_id'])
@@ -376,6 +404,7 @@ def confirm_final(id:str,body:dict):
         if fc.data.get('analysis_status')!='ready' or not auto.get('passed'):svc.fail('成片自动检测尚未通过，请查看具体时间点或参数差异')
         checks=body.get('checks',{})
         if not all(checks.get(k) for k in ['motion','audio','subtitle']):svc.fail('请完成动作、试听、字幕同步三项人工确认')
+        if get(s,'project',fc.project_id).data.get('production_workflow') and not checks.get('rights'):svc.fail('请核对当前画面、音乐、音效和声音的商业使用范围')
         fc.data={**fc.data,'manual_checks':checks,'confirmed_at':now()};fc.status='publishable';touch(fc);s.commit();return jsonable(fc)
 
 @app.post('/api/finals/{id}/reanalyze')
@@ -508,10 +537,10 @@ def restore(body:dict):
 def cost_csv(project_id:str|None=None):
     with Session(engine) as s:
         out=io.StringIO();writer=csv.writer(out);writer.writerow(['ID','项目ID','分类','积分','人民币','计价状态','日期'])
-        for c in rows(s,'cost_entry',project_id):writer.writerow([c.id,c.project_id,c.name,c.data.get('credits'),c.amount_fen/100,'待核价' if c.data.get('unpriced') else '估算' if c.data.get('estimated') else '已登记',c.created_at])
+        for c in rows(s,'cost_entry',project_id):writer.writerow([c.id,c.project_id,c.name,c.data.get('credits'),'' if c.data.get('unpriced') else c.amount_fen/100,'待核价' if c.data.get('unpriced') else '估算' if c.data.get('estimated') else '已登记',c.created_at])
         return Response('\ufeff'+out.getvalue(),media_type='text/csv; charset=utf-8',headers={'Content-Disposition':'attachment; filename=costs.csv'})
 
-DIST=ROOT/'web'/'dist'
+DIST=Path(os.environ.get('CATSTUDIO_DIST',ROOT/'web'/'dist')).resolve()
 if DIST.exists():
     app.mount('/assets',StaticFiles(directory=DIST/'assets'),name='assets')
     @app.get('/{path:path}')

@@ -20,7 +20,7 @@ def money(value):
 def spend(s,pid=None,month=None):
     return sum(x.amount_fen for x in rows(s,'cost_entry',pid) if not month or x.created_at[:7]==month)/100
 def cost(s,pid,category,ref_id,amount=0,credits=0,model_id=None):
-    return add(s,'cost_entry',project_id=pid,parent_id=ref_id,name=category,amount_fen=money(amount),status='recorded',data={'credits':credits,'model_profile_id':model_id,'occurred_at':now()})
+    return add(s,'cost_entry',project_id=pid,parent_id=ref_id,name=category,amount_fen=money(amount),status='recorded',data={'credits':credits,'unpriced':amount is None,'model_profile_id':model_id,'occurred_at':now()})
 def shots(s,pid):return sorted(rows(s,'shot',pid),key=lambda x:(x.seq,x.created_at))
 def timeline(s,pid):
     result=[]; start=0
@@ -67,6 +67,10 @@ def gate_errors(s,pid,stage):
         total=sum(x.duration_s for x in ss)
         if not b.get('duration_min_s',0)<=total<=b.get('duration_max_s',600):errors.append('分镜总时长不在简报范围内')
     if stage==4:
+        from .production import frame_errors
+        for shot in shots(s,pid):
+            if shot.data.get('input_mode')=='first_frame':
+                errors.extend(shot.name+'：'+e for e in frame_errors(s,shot))
         req=rows(s,'shot_binding',pid)
         if not req:errors.append('请按分镜登记必需资产需求与绑定')
         for bind in req:
@@ -80,6 +84,11 @@ def gate_errors(s,pid,stage):
             c=selected(s,shot.id)
             if not c:errors.append(f'{shot.name}：还没有已选用候选')
             elif c.data.get('analysis_status')!='ready':errors.append(f'{shot.name}：媒体检测未完成')
+            if c and shot.data.get('input_mode')=='first_frame':
+                current=package_preview(s,shot.id)
+                original=get(s,'generation_record',c.parent_id)
+                if current['errors'] or any(original.data.get(k)!=current.get(k) for k in ['prompt','bindings','params']):
+                    errors.append(f'{shot.name}：首帧、角色或模型输入已变化，请重新审核并提交')
     if stage==6:
         if not any(x.status=='publishable' for x in rows(s,'final_cut',pid)):errors.append('请回传成片并通过自动检查与三项人工确认')
     if stage==7:
@@ -109,9 +118,20 @@ def package_preview(s,shot_id):
     if not model:errors.append('请选择视频模型档案')
     elif not model.data.get('verified_at'):errors.append('请先核对模型档案并登记核对日期')
     prompt=shot.data.get('prompt',''); rendered=prompt;upload=[];snapshot=[]
+    first_frame=shot.data.get('input_mode')=='first_frame'
     binds=[x for x in rows(s,'shot_binding',shot.project_id) if x.shot_id==shot_id]
     slots={x.data.get('slot') for x in binds if x.data.get('asset_version_id')}
-    if not {'主体','场景','道具'}<=slots:errors.append('主体、场景和道具必须绑定')
+    if first_frame:
+        from .production import frame_errors,frame_fingerprint
+        errors.extend(frame_errors(s,shot))
+        if '主体' not in slots:errors.append('请绑定定稿角色身份母图')
+        fid=shot.data.get('keyframe_file_id')
+        if fid:
+            f=get(s,'file_object',fid)
+            if not f.data.get('mime','').startswith('image/'):errors.append('首帧必须是图片')
+            upload.append({'order':1,'file_id':f.id,'filename':'01_已审分镜首帧'+Path(f.data['original_name']).suffix,'subject':None,'role':'首帧','is_audio':False})
+            snapshot.append({'keyframe_fingerprint':frame_fingerprint(s,shot),'file_id':f.id})
+    elif not {'主体','场景','道具'}<=slots:errors.append('主体、场景和道具必须绑定')
     for bind in sorted(binds,key=lambda x:x.seq):
         vid=bind.data.get('asset_version_id')
         if not vid:
@@ -119,6 +139,9 @@ def package_preview(s,shot_id):
             continue
         av=get(s,'asset_version',vid);asset=get(s,'asset',av.parent_id)
         if av.status!='final':errors.append(asset.name+'不是定稿版本')
+        if first_frame:
+            snapshot.append({'binding_id':bind.id,'asset_version_id':av.id,'slot':bind.data.get('slot')})
+            continue
         variants=[(asset,av)]
         if bind.data.get('with_accessories'):
             for link in rows(s,'asset_link',parent=asset.id):
@@ -145,20 +168,25 @@ def package_preview(s,shot_id):
             snapshot.append({'binding_id':bind.id,'asset_id':a.id,'asset_name':a.name,'asset_version_id':v.id,'version':v.version,'official_subject':subject,'slot':bind.data.get('slot')})
     if not prompt.strip():errors.append('请填写视频提示词')
     if re.search(r'\{\{.*?\}\}|@资产|\[待.*?\]',rendered):errors.append('提示词仍含未替换占位符')
-    params={**p.data.get('generation_settings',{}),**shot.data.get('settings',{}),'duration_s':shot.duration_s,'ratio':b.get('aspect_ratio','9:16')}
+    generation_duration=shot.data.get('generation_duration_s') or shot.duration_s
+    params={**p.data.get('generation_settings',{}),**shot.data.get('settings',{}),'duration_s':generation_duration,'ratio':b.get('aspect_ratio','9:16')}
     params.setdefault('resolution','720p');params.setdefault('candidates',1);params.setdefault('mode','参考生视频');params.setdefault('audio_strategy','后期补充')
+    if first_frame:params['mode']='首帧图生视频'
     estimate=None
+    estimate_credits=None
     if model:
         m=model.data;params['model']=model.name;params['model_version']=m.get('version','')
-        for key,val,label in [('durations',shot.duration_s,'时长档位'),('ratios',params['ratio'],'画幅'),('resolutions',params['resolution'],'分辨率'),('modes',params['mode'],'模式')]:
+        for key,val,label in [('durations',generation_duration,'时长档位'),('ratios',params['ratio'],'画幅'),('resolutions',params['resolution'],'分辨率'),('modes',params['mode'],'模式')]:
             if val not in m.get(key,[]):errors.append(label+'不在模型档案支持范围内')
         image_count=sum(not x['is_audio'] for x in upload);audio_count=sum(x['is_audio'] for x in upload)
         if image_count>m.get('max_ref_images',0):errors.append('参考图片数量超过模型上限')
         if audio_count>m.get('max_audio',0):errors.append('音频数量超过模型上限')
         if m.get('credit_price') is not None and m.get('credit_to_cny') is not None:
             estimate=round(float(m['credit_price'])*float(m['credit_to_cny'])*int(params['candidates']),4)
-        else:errors.append('请在档案中填写每候选积分和人民币换算单价')
-    return {'shot_id':shot.id,'project_id':shot.project_id,'prompt':rendered,'params':params,'upload_order':upload,'bindings':snapshot,'estimate_cny':estimate,'errors':errors,'model_id':mid}
+        elif m.get('billing_mode')!='membership':errors.append('请在档案中填写每候选积分和人民币换算单价，会员可选择会员积分记账')
+        if m.get('credit_price') is not None:estimate_credits=float(m['credit_price'])*int(params['candidates'])
+        if m.get('billing_mode')=='membership' and estimate_credits is None:errors.append('请填写会员每候选预计扣分')
+    return {'shot_id':shot.id,'project_id':shot.project_id,'prompt':rendered,'image_prompt':shot.data.get('image_prompt',''),'params':params,'upload_order':upload,'bindings':snapshot,'estimate_cny':estimate,'estimate_credits':estimate_credits,'billing_mode':model.data.get('billing_mode','cash') if model else 'cash','billing_snapshot':{k:model.data.get(k) for k in ['credit_price','credit_to_cny','billing_mode']} if model else {},'edit_duration_s':shot.duration_s,'errors':errors,'model_id':mid}
 
 def budget_check(s,pid):
     b=brief(s,pid);settings=config(s,'budget',{'monthly_cap':500,'pause':True})
@@ -179,7 +207,7 @@ def export_submission(s,shot_id,confirmation=False,nonce=None):
     budget_check(s,shot.project_id)
     lines=['# '+shot.name+' 官网提交说明','', '## 最终提示词',preview['prompt'],'','## 参数',json.dumps(preview['params'],ensure_ascii=False,indent=2),'','## 上传顺序与官网主体']
     for u in preview['upload_order']:lines.append(f'{u["order"]}. {u["filename"]} — '+('在提示词中手动点选 @'+u['subject'] if u['subject'] else '引用图'+str(u['order'])))
-    lines+=['','官网生成后请下载视频，回到本条生成记录回传，并登记实际积分。档案估算不是实际账单。']
+    lines+=['','## 生图参考词（独立步骤，不粘贴为动态图词）',preview['image_prompt'],'',f'剪辑目标 {shot.duration_s} 秒；生成档位 {preview["params"]["duration_s"]} 秒。按实际素材裁切，不足时需补生成。',f'预计积分：{preview["estimate_credits"]}；预计人民币：'+('待核价' if preview['estimate_cny'] is None else str(preview['estimate_cny'])),'','官网生成后请下载视频，回到本条生成记录回传，并登记实际积分。档案估算不是实际账单。']
     file=storage.zip_files(s,shot.name+'-提交包',{'submission.md':'\n'.join(lines),'manifest.json':json.dumps(preview,ensure_ascii=False,indent=2)},[(u['filename'],u['file_id']) for u in preview['upload_order']])
     record=add(s,'generation_record',project_id=shot.project_id,shot_id=shot.id,parent_id=shot.id,name=shot.name,status='awaiting',data={**preview,'package_file_id':file.id,'nonce':nonce,'exported_at':now(),'input_hash':hashlib.sha256(json.dumps(preview,sort_keys=True).encode()).hexdigest()})
     shot.status='awaiting';touch(shot)
@@ -195,6 +223,7 @@ def review_candidate(s,cid,body):
         # Snapshot must still match current binding and prompt.
         original=get(s,'generation_record',c.parent_id)
         current=package_preview(s,shot.id)
+        if shot.data.get('input_mode')=='first_frame' and current['errors']:fail('当前首帧或模型配置已失效：'+'；'.join(current['errors']),409)
         for key in ('prompt','bindings','params'):
             if original.data.get(key)!=current.get(key):fail('镜头输入已变化，请重新导出并回传候选；旧候选保留为历史',409)
         old=selected(s,shot.id)
@@ -229,15 +258,18 @@ def edit_package(s,pid,srt=None):
         c=selected(s,sh.id)
         enhanced=sorted([x for x in rows(s,'candidate',pid) if x.data.get('enhanced_parent_id')==c.id and x.data.get('approved') and x.data.get('analysis_status')=='ready'],key=lambda x:x.created_at)
         chosen=enhanced[-1] if enhanced else c
-        f=get(s,'file_object',chosen.data['file_id']);filename=f'{i+1:02d}_{sh.name}.mp4';sources.append((filename,f.id))
+        f=get(s,'file_object',chosen.data['file_id']);filename=f'{i+1:02d}_{sh.name}'+Path(f.data['original_name']).suffix;sources.append((filename,f.id))
         reviews=rows(s,'review',parent=c.id)
         content.append(f'{i+1}. {sh.name} / {sh.duration_s}s / {sh.data.get("sound", "")} / 审片标记：'+json.dumps([r.data for r in reviews],ensure_ascii=False))
-        manifest.append({'shot_id':sh.id,'candidate_id':chosen.id,'file_id':f.id,'duration_s':sh.duration_s})
+        manifest.append({'shot_id':sh.id,'candidate_id':chosen.id,'file_id':f.id,'duration_s':sh.duration_s,'source_meta':chosen.data.get('media_meta'),'image_prompt':sh.data.get('image_prompt',''),'video_prompt':sh.data.get('prompt','')})
+        if sh.data.get('keyframe_file_id'):
+            frame=get(s,'file_object',sh.data['keyframe_file_id']);sources.append((f'分镜图/{i+1:02d}'+Path(frame.data['original_name']).suffix,frame.id))
     for asset in rows(s,'asset'):
         if asset.project_id not in (None,pid) or asset.data.get('type') not in ['VOICE','SFX','BGM']:continue
         for v in rows(s,'asset_version',parent=asset.id):
             if v.status=='final':
                 if not v.data.get('license_note'):fail('声音资产缺少授权说明：'+asset.name)
+                if v.data.get('commercial_rights') in ['noncommercial','denied']:fail('声音资产已标记不适合商用，请移除或替换：'+asset.name)
                 for af in rows(s,'asset_file',parent=v.id):
                     f=get(s,'file_object',af.data['file_id']);sources.append(('声音/'+asset.name+Path(f.data['original_name']).suffix,f.id))
     srt=srt if srt is not None else project.data.get('srt',srt_draft(s,pid))

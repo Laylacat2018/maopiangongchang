@@ -35,6 +35,7 @@ export function nav(to, pid) {
     current &&
     stage &&
     stage > (current.data.stage || 1) &&
+    !(to === "assets" && current.data.production_workflow) &&
     !previouslyConfirmed
   ) {
     notify(
@@ -174,7 +175,8 @@ export const statuses = {
   imported: "已导入",
 };
 export const label = (s) => statuses[s] || s;
-export const yuan = (n) => "¥" + Number(n || 0).toFixed(2);
+export const yuan = (n) =>
+  n == null || n === "" ? "待核价" : "¥" + Number(n).toFixed(2);
 export const date = (s) =>
   s ? new Date(s).toLocaleString("zh-CN", { hour12: false }) : "尚未登记";
 export const stages = [

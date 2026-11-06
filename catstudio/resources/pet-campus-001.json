@@ -1,0 +1,378 @@
+{
+  "id": "pet-campus-001",
+  "title": "我以为今天有早八",
+  "summary": "闹钟惊醒，赶着洗漱出门，不忘早餐。冲进空教室才发现今天周末，回宿舍抱被补觉。",
+  "identity": "成年大学生金渐层圆脸猫，M形额纹、琥珀眼、粉鼻、完整猫爪；米色滚边睡衣。迷糊嘴硬、爱吃、认真。",
+  "provenance": "真实首片：imagegen 生图 + 本地 Wan2.1 图生视频 + FFmpeg 剪辑。即梦迁移提示词为参考，尚未在会员账户验证；剪映交接素材不等于剪映原生工程。",
+  "cost": {
+    "credits": null,
+    "cash_cny": null,
+    "membership_allocated_cny": null,
+    "labor_minutes": null,
+    "note": "尚无完整账单/工时，费用与会员扣分待核，不能按零成本计算。"
+  },
+  "quality": {
+    "source": "480×848 / 16fps / 每镜65帧",
+    "export": "1080×1920 / 30fps / 38秒",
+    "human_review": "待完整观看、听审与商用权益核对",
+    "audio": "原创程序音乐与音效；排除非商用 OmniVoice 测试配音。"
+  },
+  "brief": {
+    "audience": "18–35岁，经历过赶课或上班乌龙、喜欢轻松猫咪短剧的观众",
+    "tags": [
+      "校园乌龙",
+      "解压",
+      "周末"
+    ],
+    "direction": "校园乌龙萌猫短剧",
+    "emotion": "紧张到松弛，会心一笑",
+    "platforms": [
+      "抖音",
+      "小红书",
+      "视频号"
+    ],
+    "aspect_ratio": "9:16",
+    "duration_min_s": 35,
+    "duration_max_s": 45,
+    "language": "中文",
+    "budget_cap": 50,
+    "pause_on_budget": true,
+    "quantity": 1
+  },
+  "shots": [
+    {
+      "name": "惊醒",
+      "action": "宿舍床上猫忽然睁大眼，前爪抬到脸边，床边闹钟数字后期叠加",
+      "caption": "完了！早八已经开始了！",
+      "duration_s": 4,
+      "sound": "闹铃，床被摩擦，节奏起",
+      "image_key": "image01",
+      "clip_key": "clip01",
+      "image_prompt": "使用随包A版身份母图作为同一主角参考：金渐层圆脸猫，深色M形额纹、琥珀色眼睛、粉色三角鼻、白胡须，完整毛茸茸猫爪，微圆体型，米色棉质滚边睡衣。保留脸型、花纹、毛色、服饰和体型。宿舍下铺床上，猫刚惊醒，靠枕坐起，床头有黑色闹钟，晨光，表情紧张。一张独立9:16竖图，写实毛发与棉布质感，温暖柔光，空间连贯。单主角，不生成拼图、文字、商标、人类手指、人脸或额外肢体；留字幕空间且不遮脸。",
+      "actual_video_prompt": "A single continuous photorealistic shot. The same golden shaded cat university student in beige pajamas wakes up in sudden surprise. Its eyes widen, it lowers the paw slightly from its cheek and looks toward the clock, then blinks. Cat anatomy, natural cat paws. The curtain moves gently in a morning breeze, the cat breathes gently. Camera stays steady. No speaking, no human hands, no extra characters, no cuts. Preserve the face, fur pattern and clothing.",
+      "jimeng_video_prompt": "以提供的首帧为起点，保持同一只金渐层猫的脸型、M形额纹、琥珀色眼睛、猫爪、米色睡衣和现有道具。单一连续镜头：宿舍床上猫忽然睁大眼，前爪抬到脸边，床边闹钟数字后期叠加。动作轻微自然，固定机位，保留背景空间。保持完整猫爪、物体形状和数量，不生成额外肢体、人类手指、文字或说话口型。时长和分辨率按即梦当前模型档位填写。",
+      "receipt": {
+        "prompt_id": "f7ecba9a-5f31-4b3b-a257-711a80cb927c",
+        "native_resolution": [
+          480,
+          848
+        ],
+        "frames": 65,
+        "fps": 16,
+        "seed": 2026110501,
+        "steps": 4
+      },
+      "source_duration_s": 4.0625
+    },
+    {
+      "name": "极简洗漱",
+      "action": "洗手台前刷牙，一只前爪握牙刷小幅刷动，少量泡沫；无镜面反射",
+      "caption": "我宣布，今天走极简风。",
+      "duration_s": 4,
+      "sound": "刷牙、水声",
+      "image_key": "image02",
+      "clip_key": "clip02",
+      "image_prompt": "使用随包A版身份母图作为同一主角参考：金渐层圆脸猫，深色M形额纹、琥珀色眼睛、粉色三角鼻、白胡须，完整毛茸茸猫爪，微圆体型，米色棉质滚边睡衣。保留脸型、花纹、毛色、服饰和体型。洗手台前，猫一只猫爪握蓝色牙刷靠近嘴边，水龙头和瓷盆清楚，无镜面第二角色。一张独立9:16竖图，写实毛发与棉布质感，温暖柔光，空间连贯。单主角，不生成拼图、文字、商标、人类手指、人脸或额外肢体；留字幕空间且不遮脸。",
+      "actual_video_prompt": "One steady close-up shot of the same golden shaded cat in beige pajamas at the washroom sink. The cat gently brushes its front teeth with the same small blue toothbrush, its furry cat paw making two small up and down movements, then blinks once. A tiny dab of foam stays at the corner of the mouth. The other cat paw remains on the sink. Natural breathing, slight whisker motion. Keep the same round face and fur markings. No human fingers, no extra paws, no new objects, no mouth speaking, no cuts, no zoom. The tile background and faucet remain fixed.",
+      "jimeng_video_prompt": "以提供的首帧为起点，保持同一只金渐层猫的脸型、M形额纹、琥珀色眼睛、猫爪、米色睡衣和现有道具。单一连续镜头：洗手台前刷牙，一只前爪握牙刷小幅刷动，少量泡沫；无镜面反射。动作轻微自然，固定机位，保留背景空间。保持完整猫爪、物体形状和数量，不生成额外肢体、人类手指、文字或说话口型。时长和分辨率按即梦当前模型档位填写。",
+      "receipt": {
+        "prompt_id": "2ae72c88-a8f0-4668-8850-f029b5d412ec",
+        "native_resolution": [
+          480,
+          848
+        ],
+        "frames": 65,
+        "fps": 16,
+        "seed": 2026110502,
+        "steps": 4
+      },
+      "source_duration_s": 4.0625
+    },
+    {
+      "name": "冲出宿舍",
+      "action": "猫穿着睡衣背着简单小背包到宿舍门边",
+      "caption": "少一秒都不行！",
+      "duration_s": 4,
+      "sound": "脚步、短呼气",
+      "image_key": "image03",
+      "clip_key": "clip03",
+      "image_prompt": "使用随包A版身份母图作为同一主角参考：金渐层圆脸猫，深色M形额纹、琥珀色眼睛、粉色三角鼻、白胡须，完整毛茸茸猫爪，微圆体型，米色棉质滚边睡衣。保留脸型、花纹、毛色、服饰和体型。宿舍门口，猫已背米色背包，面向出口，身体前倾准备迈步。一张独立9:16竖图，写实毛发与棉布质感，温暖柔光，空间连贯。单主角，不生成拼图、文字、商标、人类手指、人脸或额外肢体；留字幕空间且不遮脸。",
+      "actual_video_prompt": "One continuous photorealistic shot. The same round golden shaded cat in beige pajamas and beige canvas backpack takes two short hurried steps forward out of the dorm doorway, then briefly looks toward the camera. Its cat paws keep the same shape and limb count, one paw stays on the backpack strap. The backpack bounces gently with its steps. Camera slowly tracks backwards without rotating. Door and corridor remain rigid. Preserve fur markings, round face, clothing and bag. No human hands, no extra characters, no running leap, no dialogue, no cuts.",
+      "jimeng_video_prompt": "以提供的首帧为起点，保持同一只金渐层猫的脸型、M形额纹、琥珀色眼睛、猫爪、米色睡衣和现有道具。单一连续镜头：猫穿着睡衣背着简单小背包到宿舍门边。动作轻微自然，固定机位，保留背景空间。保持完整猫爪、物体形状和数量，不生成额外肢体、人类手指、文字或说话口型。时长和分辨率按即梦当前模型档位填写。",
+      "receipt": {
+        "prompt_id": "52ec9fcc-8840-4053-9141-69fb5e500630",
+        "native_resolution": [
+          480,
+          848
+        ],
+        "frames": 65,
+        "fps": 16,
+        "seed": 2026110503,
+        "steps": 4
+      },
+      "source_duration_s": 4.0625
+    },
+    {
+      "name": "早饭必须带",
+      "action": "猫折回桌前，两爪抱住无品牌早餐纸袋，认真点头",
+      "caption": "但早饭必须带。",
+      "duration_s": 4,
+      "sound": "音乐短停，纸袋轻响",
+      "image_key": "image04",
+      "clip_key": "clip04",
+      "image_prompt": "使用随包A版身份母图作为同一主角参考：金渐层圆脸猫，深色M形额纹、琥珀色眼睛、粉色三角鼻、白胡须，完整毛茸茸猫爪，微圆体型，米色棉质滚边睡衣。保留脸型、花纹、毛色、服饰和体型。宿舍桌前，猫已背背包，双爪抱稳牛皮早餐袋，桌上白色杯子留在原处。一张独立9:16竖图，写实毛发与棉布质感，温暖柔光，空间连贯。单主角，不生成拼图、文字、商标、人类手指、人脸或额外肢体；留字幕空间且不遮脸。",
+      "actual_video_prompt": "One steady photorealistic medium close-up. The same golden shaded cat student in beige pajamas and beige backpack hugs the kraft breakfast bag gently closer to its chest, lifts its chin with a serious proud expression and gives one small nod. Its whiskers and ears move subtly, its chest breathes. Both complete furry cat paws remain around the bag, bag and cup keep their shape. Morning curtain moves very slightly. No human hands, no extra paws, no new objects, no dialogue, no cuts, no camera rotation.",
+      "jimeng_video_prompt": "以提供的首帧为起点，保持同一只金渐层猫的脸型、M形额纹、琥珀色眼睛、猫爪、米色睡衣和现有道具。单一连续镜头：猫折回桌前，两爪抱住无品牌早餐纸袋，认真点头。动作轻微自然，固定机位，保留背景空间。保持完整猫爪、物体形状和数量，不生成额外肢体、人类手指、文字或说话口型。时长和分辨率按即梦当前模型档位填写。",
+      "receipt": {
+        "prompt_id": "c1db0ac6-7e3c-4089-8bd4-2a2fe54a8587",
+        "native_resolution": [
+          480,
+          848
+        ],
+        "frames": 65,
+        "fps": 16,
+        "seed": 2026110504,
+        "steps": 4
+      },
+      "source_duration_s": 4.0625
+    },
+    {
+      "name": "空教室",
+      "action": "猫抱早餐站在空教室门口，探头左右看",
+      "caption": "到了，老师还没来？",
+      "duration_s": 5,
+      "sound": "安静教室环境，短疑惑音",
+      "image_key": "image05",
+      "clip_key": "clip05",
+      "image_prompt": "使用随包A版身份母图作为同一主角参考：金渐层圆脸猫，深色M形额纹、琥珀色眼睛、粉色三角鼻、白胡须，完整毛茸茸猫爪，微圆体型，米色棉质滚边睡衣。保留脸型、花纹、毛色、服饰和体型。空大学教室，猫站在桌椅前抱早餐纸袋，背包不变，茫然环顾。一张独立9:16竖图，写实毛发与棉布质感，温暖柔光，空间连贯。单主角，不生成拼图、文字、商标、人类手指、人脸或额外肢体；留字幕空间且不遮脸。",
+      "actual_video_prompt": "One continuous photorealistic medium shot. The same golden shaded cat in beige pajamas and beige backpack stands in an empty university classroom holding a kraft breakfast paper bag. It slowly looks around, then back toward the camera with puzzled eyes. Its ears twitch and chest breathes. Desks and chairs remain still. Steady camera. Preserve the face, fur pattern, cat paws and bag. No humans, extra limbs, changing objects, text, dialogue or cuts.",
+      "jimeng_video_prompt": "以提供的首帧为起点，保持同一只金渐层猫的脸型、M形额纹、琥珀色眼睛、猫爪、米色睡衣和现有道具。单一连续镜头：猫抱早餐站在空教室门口，探头左右看。动作轻微自然，固定机位，保留背景空间。保持完整猫爪、物体形状和数量，不生成额外肢体、人类手指、文字或说话口型。时长和分辨率按即梦当前模型档位填写。",
+      "receipt": {
+        "prompt_id": "04ee43d2-4999-41dd-8db8-097453ddd44d",
+        "native_resolution": [
+          480,
+          848
+        ],
+        "frames": 65,
+        "fps": 16,
+        "seed": 2026110505,
+        "steps": 4
+      },
+      "source_duration_s": 4.0625
+    },
+    {
+      "name": "周末反转",
+      "action": "猫看手机，表情从期待变呆，手机信息后期添加",
+      "caption": "起猛了，今天周末。",
+      "duration_s": 6,
+      "sound": "音乐停止半拍，短喜剧音",
+      "image_key": "image06",
+      "clip_key": "clip06",
+      "image_prompt": "使用随包A版身份母图作为同一主角参考：金渐层圆脸猫，深色M形额纹、琥珀色眼睛、粉色三角鼻、白胡须，完整毛茸茸猫爪，微圆体型，米色棉质滚边睡衣。保留脸型、花纹、毛色、服饰和体型。空教室猫脸近景，双爪稳持深色手机，手机背面朝相机，猫低头看手机。一张独立9:16竖图，写实毛发与棉布质感，温暖柔光，空间连贯。单主角，不生成拼图、文字、商标、人类手指、人脸或额外肢体；留字幕空间且不遮脸。",
+      "actual_video_prompt": "One steady photorealistic close-up. The same golden shaded cat student in beige pajamas holds the dark smartphone firmly in both complete furry cat paws. It looks down at the phone, pauses, then slowly raises its eyes toward the camera, ears lowering slightly with an embarrassed stunned expression. It blinks once and breathes subtly. Phone and paws keep their exact shape, phone back remains facing camera. Empty classroom background remains fixed. No human fingers, no new limbs, no changing objects, no text, no speaking, no cuts or zoom.",
+      "jimeng_video_prompt": "以提供的首帧为起点，保持同一只金渐层猫的脸型、M形额纹、琥珀色眼睛、猫爪、米色睡衣和现有道具。单一连续镜头：猫看手机，表情从期待变呆，手机信息后期添加。动作轻微自然，固定机位，保留背景空间。保持完整猫爪、物体形状和数量，不生成额外肢体、人类手指、文字或说话口型。时长和分辨率按即梦当前模型档位填写。",
+      "receipt": {
+        "prompt_id": "8ef40459-d8a5-4870-bb8f-75598f1c9f84",
+        "native_resolution": [
+          480,
+          848
+        ],
+        "frames": 65,
+        "fps": 16,
+        "seed": 2026110506,
+        "steps": 4
+      },
+      "source_duration_s": 4.0625
+    },
+    {
+      "name": "回到宿舍",
+      "action": "回宿舍，猫看向拉好的床帘，慢慢回头看镜头，不增加第二只猫",
+      "caption": "原来全宿舍，只有我醒了。",
+      "duration_s": 5,
+      "sound": "轻脚步，轻鼾情景声",
+      "image_key": "image07",
+      "clip_key": "clip07",
+      "image_prompt": "使用随包A版身份母图作为同一主角参考：金渐层圆脸猫，深色M形额纹、琥珀色眼睛、粉色三角鼻、白胡须，完整毛茸茸猫爪，微圆体型，米色棉质滚边睡衣。保留脸型、花纹、毛色、服饰和体型。回到同一宿舍中景，猫背背包站在床边，上下铺床帘合拢，无第二角色。一张独立9:16竖图，写实毛发与棉布质感，温暖柔光，空间连贯。单主角，不生成拼图、文字、商标、人类手指、人脸或额外肢体；留字幕空间且不遮脸。",
+      "actual_video_prompt": "One continuous photorealistic medium shot of the same golden shaded cat in beige pajamas and beige backpack back in its dorm. It slowly turns its head from the closed bunk curtain toward the camera, looking mildly embarrassed and tired, then blinks. One cat paw keeps holding the backpack strap. The closed curtain sways just slightly, the cat breathes. Fixed camera, no speaking, no human hands, no extra paws, no other characters, no changing face, no cuts. Keep the room and the beige backpack rigid and consistent.",
+      "jimeng_video_prompt": "以提供的首帧为起点，保持同一只金渐层猫的脸型、M形额纹、琥珀色眼睛、猫爪、米色睡衣和现有道具。单一连续镜头：回宿舍，猫看向拉好的床帘，慢慢回头看镜头，不增加第二只猫。动作轻微自然，固定机位，保留背景空间。保持完整猫爪、物体形状和数量，不生成额外肢体、人类手指、文字或说话口型。时长和分辨率按即梦当前模型档位填写。",
+      "receipt": {
+        "prompt_id": "0dcea304-b94e-4519-a177-77cc5a248857",
+        "native_resolution": [
+          480,
+          848
+        ],
+        "frames": 65,
+        "fps": 16,
+        "seed": 2026110507,
+        "steps": 4
+      },
+      "source_duration_s": 4.0625
+    },
+    {
+      "name": "补觉收尾",
+      "action": "猫躺回床里抱住被子，缓慢闭眼",
+      "caption": "闹钟，你最好解释一下。",
+      "duration_s": 6,
+      "sound": "暖收尾旋律，末尾闹铃呼应",
+      "image_key": "image08",
+      "clip_key": "clip08",
+      "image_prompt": "使用随包A版身份母图作为同一主角参考：金渐层圆脸猫，深色M形额纹、琥珀色眼睛、粉色三角鼻、白胡须，完整毛茸茸猫爪，微圆体型，米色棉质滚边睡衣。保留脸型、花纹、毛色、服饰和体型。宿舍下铺床边近景，猫已卸下背包，靠近枕头，床头黑色闹钟仍在。一张独立9:16竖图，写实毛发与棉布质感，温暖柔光，空间连贯。单主角，不生成拼图、文字、商标、人类手指、人脸或额外肢体；留字幕空间且不遮脸。",
+      "actual_video_prompt": "One continuous calm photorealistic close-up of the same golden shaded cat in beige pajamas lying in bed. It gives one small tired yawn, then gradually closes its eyes and gently hugs the cream duvet with a complete furry cat paw. Subtle breathing makes its chest and duvet rise slightly; ear twitches once. Soft morning curtain sways gently. Fixed camera, warm stable daylight. Preserve exactly the round feline face and forehead markings. No human hands or fingers, no extra paws, no changing clock or bedding, no speaking, no cuts or camera movement.",
+      "jimeng_video_prompt": "以提供的首帧为起点，保持同一只金渐层猫的脸型、M形额纹、琥珀色眼睛、猫爪、米色睡衣和现有道具。单一连续镜头：猫躺回床里抱住被子，缓慢闭眼。动作轻微自然，固定机位，保留背景空间。保持完整猫爪、物体形状和数量，不生成额外肢体、人类手指、文字或说话口型。时长和分辨率按即梦当前模型档位填写。",
+      "receipt": {
+        "prompt_id": "ff184e6e-a834-4d32-b755-97b2bac6b908",
+        "native_resolution": [
+          480,
+          848
+        ],
+        "frames": 65,
+        "fps": 16,
+        "seed": 2026110508,
+        "steps": 4
+      },
+      "source_duration_s": 4.0625
+    }
+  ],
+  "media": {
+    "identity": {
+      "filename": "identity.png",
+      "source_relative": "角色/A版身份母图.png",
+      "sha256": "300bc05f65adedeb2bb6faadad56d10cec792f53e596d6e2b68e338d7b1baaa3",
+      "size": 2414533,
+      "mime": "image/png"
+    },
+    "final": {
+      "filename": "final-preview.mp4",
+      "source_relative": "成片/001-今天没早八-发布预览.mp4",
+      "sha256": "2661e145ea9a68553f450ff5934edbd057ef319753ef1e8a64cef282d972177a",
+      "size": 35601872,
+      "mime": "video/mp4"
+    },
+    "subtitles": {
+      "filename": "subtitles.srt",
+      "source_relative": "成片/001-中文字幕.srt",
+      "sha256": "fdac40f319215cdf8caee54358b012d0d280ceb46deca9d07e7c2114475a3a88",
+      "size": 607,
+      "mime": "text/plain"
+    },
+    "image01": {
+      "filename": "shot01.png",
+      "source_relative": "生图/shot01.png",
+      "sha256": "300bc05f65adedeb2bb6faadad56d10cec792f53e596d6e2b68e338d7b1baaa3",
+      "size": 2414533,
+      "mime": "image/png"
+    },
+    "clip01": {
+      "filename": "shot01.webm",
+      "source_relative": "视频/shot01.webm",
+      "sha256": "87222cc608b5ca6d58ca5982dda8585b2a99b57e6a252a90c3aba1852981ae5a",
+      "size": 2085455,
+      "mime": "video/webm"
+    },
+    "image02": {
+      "filename": "shot02.png",
+      "source_relative": "生图/shot02.png",
+      "sha256": "b515407896459277bcb7a8c0e8619b6f94846ab57288120c870ae0c6750f54e4",
+      "size": 2597152,
+      "mime": "image/png"
+    },
+    "clip02": {
+      "filename": "shot02.webm",
+      "source_relative": "视频/shot02.webm",
+      "sha256": "77ce9924b9ac1da35dcb8c96fa7939fc97c3a69921f9508e26303b257e9fb63d",
+      "size": 2818836,
+      "mime": "video/webm"
+    },
+    "image03": {
+      "filename": "shot03.png",
+      "source_relative": "生图/shot03.png",
+      "sha256": "c87de0cf81c74488deebf92718eea8e4e57be2a288f04aef5252d34470c45720",
+      "size": 2549044,
+      "mime": "image/png"
+    },
+    "clip03": {
+      "filename": "shot03.webm",
+      "source_relative": "视频/shot03.webm",
+      "sha256": "c3e324a1d0dec1063ccae27afb6791be93c25f9d969b5e89e2455d66753e6afe",
+      "size": 2355751,
+      "mime": "video/webm"
+    },
+    "image04": {
+      "filename": "shot04.png",
+      "source_relative": "生图/shot04.png",
+      "sha256": "e066dd49ec652463144cc68a241637866f8afcf7590a5f80e0dfa9bbbb710d39",
+      "size": 2331448,
+      "mime": "image/png"
+    },
+    "clip04": {
+      "filename": "shot04.webm",
+      "source_relative": "视频/shot04.webm",
+      "sha256": "3c7dd29d4d43689d56bb53d9b04943f4f7f549236d70421be8bfa6a3a58cec9e",
+      "size": 1849995,
+      "mime": "video/webm"
+    },
+    "image05": {
+      "filename": "shot05.png",
+      "source_relative": "生图/shot05.png",
+      "sha256": "70b789b142651a5619ed80acad0111e73421de856e02758255a77d83f7f33329",
+      "size": 2551566,
+      "mime": "image/png"
+    },
+    "clip05": {
+      "filename": "shot05.webm",
+      "source_relative": "视频/shot05.webm",
+      "sha256": "773531b6bcd17d40553960566264e83ce16397b0207a4d4308378099b1bfb6bc",
+      "size": 1979842,
+      "mime": "video/webm"
+    },
+    "image06": {
+      "filename": "shot06.png",
+      "source_relative": "生图/shot06.png",
+      "sha256": "c78751879c59ce6c1499d38386214191d5f9e5342fd62100e9218bd2778797f5",
+      "size": 2455813,
+      "mime": "image/png"
+    },
+    "clip06": {
+      "filename": "shot06.webm",
+      "source_relative": "视频/shot06.webm",
+      "sha256": "e92a5bda973afba3e6f7c8b3a70887015052d8c246defcc66821d96866a20a06",
+      "size": 2058179,
+      "mime": "video/webm"
+    },
+    "image07": {
+      "filename": "shot07.png",
+      "source_relative": "生图/shot07.png",
+      "sha256": "22885576f6c8fa5c662203fda79378343d6e163e79978dbe352bd02c4dd00cbb",
+      "size": 2335725,
+      "mime": "image/png"
+    },
+    "clip07": {
+      "filename": "shot07.webm",
+      "source_relative": "视频/shot07.webm",
+      "sha256": "fb5ec6e6cdd9dd3979ba0aef680c13dc16bf9e76954559bbd1178f1b75d9059e",
+      "size": 1576905,
+      "mime": "video/webm"
+    },
+    "image08": {
+      "filename": "shot08.png",
+      "source_relative": "生图/shot08.png",
+      "sha256": "1d858ce4fd758d6a66aac6d31c20467ad3b976d69e61282d94705fbf63296a6f",
+      "size": 2156477,
+      "mime": "image/png"
+    },
+    "clip08": {
+      "filename": "shot08.webm",
+      "source_relative": "视频/shot08.webm",
+      "sha256": "93a7f8562cd3eeaa45d74d905b331824ed35da74c39f82abf597a06df9e5161f",
+      "size": 1983201,
+      "mime": "video/webm"
+    }
+  },
+  "lessons": [
+    "先审核独立分镜图，再图生视频，失败只修对应镜头。",
+    "手机背面朝镜头，文字后期添加，减少乱码和道具变形。",
+    "一镜优先一个主动作；猫爪保持完整，避开镜面第二角色。",
+    "原始生成时长与剪辑时长分开；1080P导出不代表原生1080P细节。",
+    "旧片作为制作基线，复制后重新审核；没有发布数据不能称已验证爆款。"
+  ]
+}

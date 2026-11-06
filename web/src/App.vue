@@ -42,6 +42,7 @@ import {
 } from "lucide-vue-next";
 import FormModal from "./FormModal.vue";
 import RetentionChart from "./RetentionChart.vue";
+import ProductionWorkbench from "./ProductionWorkbench.vue";
 import {
   db,
   connectionError,
@@ -252,6 +253,7 @@ const subpages = {
   edit: ["edit", "delivery"],
 };
 const titles = {
+  production: "七步制片与首片实录",
   dashboard: "项目工作台",
   projects: "视频项目",
   brief: "新建视频项目",
@@ -272,6 +274,7 @@ const titles = {
   library: "全局数字资产库",
 };
 const subtitles = {
+  production: "带着真实样片，把角色、提示词、逐镜审核和剪映交接连起来。",
   dashboard: "从一个好选题，到一条可发布的萌宠视频。",
   brief: "先确定拍给谁看，再让 AI 帮你讲好故事。",
   research: "从真实生活的共鸣里，找到下一条猫咪故事。",
@@ -305,6 +308,7 @@ const projectRequired = computed(
   () =>
     ![
       "dashboard",
+      "production",
       "projects",
       "settings",
       "costs",
@@ -719,6 +723,16 @@ function shotForm(sh) {
       field("end_state", "结束状态", "textarea"),
       field("line_text", "台词 / 心声", "textarea"),
       field("sound", "声音需求", "textarea"),
+      field("image_prompt", "分镜生图词（固定身份 + 静帧状态）", "textarea", {
+        wide: true,
+        rows: 4,
+      }),
+      field(
+        "generation_duration_s",
+        "官网生成档位（秒，可空则同剪辑时长）",
+        "number",
+        { min: 0.1, max: 600 },
+      ),
       field("prompt", "视频提示词", "textarea", {
         wide: true,
         rows: 4,
@@ -1057,6 +1071,12 @@ function modelForm(obj) {
       field("max_ref_images", "参考图片上限", "number", { min: 0 }),
       field("max_audio", "音频参考上限", "number", { min: 0 }),
       field("credit_price", "每候选积分", "number", { min: 0 }),
+      field("billing_mode", "记账方式", "select", {
+        options: [
+          { value: "cash", label: "人民币换算" },
+          { value: "membership", label: "会员积分（人民币可待核）" },
+        ],
+      }),
       field("credit_to_cny", "每积分人民币", "number", {
         min: 0,
         step: 0.0001,
@@ -1068,6 +1088,7 @@ function modelForm(obj) {
       kind: "video",
       max_ref_images: 0,
       max_audio: 0,
+      billing_mode: "cash",
       ...d,
       modes: (d.modes || []).join(","),
       durations: (d.durations || []).join(","),
@@ -1095,9 +1116,14 @@ function modelForm(obj) {
               .split(/[,，]/)
               .map((x) => x.trim())
               .filter(Boolean),
-            credit_price: v.credit_price === "" ? null : Number(v.credit_price),
+            credit_price:
+              v.credit_price == null || v.credit_price === ""
+                ? null
+                : Number(v.credit_price),
             credit_to_cny:
-              v.credit_to_cny === "" ? null : Number(v.credit_to_cny),
+              v.credit_to_cny == null || v.credit_to_cny === ""
+                ? null
+                : Number(v.credit_to_cny),
             max_ref_images: Number(v.max_ref_images),
             max_audio: Number(v.max_audio),
           },
@@ -1153,7 +1179,7 @@ async function exportShot() {
     preview.value = pv;
     if (pv.errors.length) throw new Error(pv.errors.join("；"));
     await window.studioConfirm(
-      `本次预计 ${yuan(pv.estimate_cny)}。导出不会调用图片或视频生成接口；请在官网生成后登记实际消耗。`,
+      `本次预计 ${pv.estimate_credits ?? "待核"} 积分，人民币 ${yuan(pv.estimate_cny)}。导出不会调用图片或视频生成接口；请在官网生成后登记实际消耗。`,
       "确认提交包",
     );
     const r = await api("/shots/" + activeShot.value.id + "/export", "POST", {
@@ -1198,7 +1224,7 @@ function ingestCandidate(enhance = false) {
       }),
       field("task_url", "官网任务链接（可选）", "url"),
     ],
-    { record_id: records[0].id, credits: 0, amount_cny: "" },
+    { record_id: records[0].id, credits: "", amount_cny: "" },
     async (v) => {
       const f = await upload(v.file);
       const r = await api(
@@ -1208,6 +1234,8 @@ function ingestCandidate(enhance = false) {
           ...v,
           file: undefined,
           file_id: f.id,
+          credits:
+            v.credits === "" || v.credits == null ? null : Number(v.credits),
           enhanced_parent_id: selectedParent?.id,
           amount_cny: v.amount_cny === "" ? null : Number(v.amount_cny),
         },
@@ -1871,6 +1899,11 @@ onBeforeUnmount(() => {
         >
           <LayoutDashboard />工作台</button
         ><button
+          :class="{ active: page === 'production' }"
+          @click="nav('production')"
+        >
+          <BookOpen />七步制片 <span class="nav-count">1.1</span></button
+        ><button
           :class="{
             active: ['projects', 'brief', 'research', 'script'].includes(page),
           }"
@@ -1922,7 +1955,7 @@ onBeforeUnmount(() => {
       </nav>
       <div class="profile">
         <div class="avatar"><PawPrint :size="19" /></div>
-        <div>我的工作室<small>个人本地版 · v1.0</small></div>
+        <div>我的工作室<small>正式版 · v1.1.0</small></div>
         <ShieldCheck :size="18" />
       </div>
     </aside>
@@ -2064,7 +2097,28 @@ onBeforeUnmount(() => {
             ><span class="muted push-right">剪辑与配音在剪映内完成</span>
           </div>
 
+          <ProductionWorkbench v-if="page === 'production'" />
           <template v-if="page === 'dashboard'">
+            <div
+              class="panel"
+              style="
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 20px;
+              "
+            >
+              <div>
+                <h2>从首片开始，跑通七步制作</h2>
+                <p class="muted">
+                  38秒校园乌龙实录 · 8镜提示词 · 即梦会员工作流 · 逐镜审图
+                </p>
+              </div>
+              <button class="primary" @click="nav('production')">
+                <BookOpen :size="17" />打开七步制片<ArrowRight :size="16" />
+              </button>
+            </div>
             <div class="dashboard-grid">
               <div class="dashboard-left">
                 <div class="stats-row">
@@ -3412,6 +3466,7 @@ onBeforeUnmount(() => {
                     ><span>生成方式</span
                     ><select v-model="generation.mode">
                       <option>参考生视频</option>
+                      <option>首帧图生视频</option>
                       <option>图生视频</option>
                       <option>文生视频</option>
                     </select></label
@@ -4380,6 +4435,13 @@ onBeforeUnmount(() => {
                       type="checkbox"
                       v-model="finalChecks.subtitle"
                     />字幕文字正确，与配音同步</label
+                  ><label
+                    v-if="project?.data.production_workflow"
+                    class="check-field review-check"
+                    ><input
+                      type="checkbox"
+                      v-model="finalChecks.rights"
+                    />已核对当前画面、音乐、音效与声音的商用范围</label
                   ><button class="accent full-width" @click="confirmFinal">
                     <ShieldCheck :size="16" />确认检查，标记可发布
                   </button></template
