@@ -1,6 +1,6 @@
 # 猫片工场
 
-**当前正式版本：V1.0（1.0.0）** · [版本记录](CHANGELOG.md) · [V1.0 发布自测](docs/V1.0发布自测.md) · [后续域名部署规划](docs/域名部署规划.md)
+**当前版本：V1.1（1.1.0），已通过用户验收。** · [V1.1 功能与验收说明](docs/V1.1-验收说明.md) · [版本记录](CHANGELOG.md) · [V1.0 发布自测](docs/V1.0发布自测.md) · [域名部署规划](docs/域名部署规划.md)
 
 GitHub 仓库：[Laylacat2018/maopiangongchang](https://github.com/Laylacat2018/maopiangongchang)。正式标签使用 `v1.0.0`；后续功能或修复在新分支开发，通过持续集成后合入 `main`，不移动已发布标签。
 

@@ -1,4 +1,4 @@
-name: V1.0 verification
+name: Production verification
 on:
   push:
     branches: [main]

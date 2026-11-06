@@ -10,6 +10,7 @@ services:
       CATSTUDIO_ALLOWED_HOSTS: ${CATSTUDIO_DOMAIN:-maopian.migucomi.com},localhost,127.0.0.1
       CATSTUDIO_MASTER_KEY_FILE: /var/lib/catstudio/secrets/master.key
       CATSTUDIO_AUTH_FILE: /var/lib/catstudio/secrets/access.json
+      CATSTUDIO_EXAMPLES_DIR: /var/lib/catstudio/data/examples
     ports:
       - "127.0.0.1:${CATSTUDIO_PORT:-8776}:8776"
     volumes:
