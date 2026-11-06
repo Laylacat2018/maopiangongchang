@@ -2,6 +2,8 @@
 
 **当前版本：V1.1（1.1.0），已通过用户验收。** · [V1.1 功能与验收说明](docs/V1.1-验收说明.md) · [版本记录](CHANGELOG.md) · [V1.0 发布自测](docs/V1.0发布自测.md) · [域名部署规划](docs/域名部署规划.md)
 
+V1.1已部署至[正式域名](https://maopian.migucomi.com/#production)，沿用原有账号登录；见[实际部署与验收记录](docs/V1.1域名部署自测.md)。
+
 GitHub 仓库：[Laylacat2018/maopiangongchang](https://github.com/Laylacat2018/maopiangongchang)。正式标签使用 `v1.0.0`；后续功能或修复在新分支开发，通过持续集成后合入 `main`，不移动已发布标签。
 
 基于《猫片工场 PRD v2.1-cc》开发的单用户本地萌宠视频生产台。沿用原设计的墨绿侧栏、薄荷绿选中态和珊瑚色主按钮，并按新版 PRD 调整为半手动流程。
