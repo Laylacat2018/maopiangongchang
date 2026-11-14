@@ -10,7 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlmodel import Session, select
 from .db import *
 from . import __version__
-from . import storage, media, services as svc, llm, tasks, security, production
+from . import storage, media, services as svc, llm, tasks, security, production, series
 
 @asynccontextmanager
 async def lifespan(app):
@@ -41,6 +41,7 @@ async def lifespan(app):
 
 app=FastAPI(title='猫片工场',version=__version__,lifespan=lifespan)
 app.include_router(production.router)
+app.include_router(series.router)
 
 @app.middleware('http')
 async def access_control(request,call_next):
@@ -96,8 +97,20 @@ def validate_save(s,kind,obj,data,is_new):
         url=d.get('url','')
         if url and urlparse(url).scheme not in ['http','https']:svc.fail('素材链接必须使用 http 或 https')
         host=urlparse(url).hostname or ''
-        d['platform']='抖音' if 'douyin' in host else '小红书' if any(x in host for x in ['xiaohongshu','xhslink']) else d.get('platform','其他')
-        obj.data={**d}
+        # Build a new dict: mutating the loaded JSON in place is not detected as a change.
+        obj.data={**d,'platform':'抖音' if 'douyin' in host else '小红书' if any(x in host for x in ['xiaohongshu','xhslink']) else 'YouTube' if any(x in host for x in ['youtube.com','youtu.be']) else 'TikTok' if 'tiktok.com' in host else d.get('platform','其他')}
+    if kind=='episode':
+        # Checks, work log, project link and publish record only change through the series operations.
+        previous=data.get('_previous_data',{}) if not is_new else {}
+        protected={k:previous.get(k,default) for k,default in [('checks',{}),('worklog',[]),('project_id',None),('youtube_url',None),('published_at',None)]}
+        if is_new:obj.status='draft'
+        elif previous.get('ending_type')!=d.get('ending_type') and obj.status!='published':
+            # A changed ending needs the five pre-publish checks again.
+            protected['checks']={};obj.status='draft'
+        obj.data={**d,**protected}
+    if kind=='product':
+        url=d.get('url','')
+        if url and urlparse(url).scheme not in ['http','https']:svc.fail('商品链接必须使用 http 或 https')
     if kind=='evidence':
         if not d.get('text','').strip():svc.fail('评论文字不能为空')
         obj.data={k:v for k,v in d.items() if k not in ['nickname','avatar','user_id']}
@@ -209,6 +222,7 @@ def update(kind:str,id:str,body:dict):
         old_data=dict(obj.data)
         if body.get('revision') is not None and body['revision']!=obj.revision:svc.fail('记录已有新版本，请刷新后再保存',409)
         if kind=='asset_version' and obj.status=='final' and body.get('status')!='disabled':svc.fail('定稿版本不能改写，请上传新版本',409)
+        if kind=='episode' and body.get('status') not in (None,obj.status):svc.fail('分集状态由发布前检查和发布登记更新',403)
         if kind in ['script','prompt_template']:
             # Editing confirmed text creates a new version; former text remains immutable.
             if kind=='prompt_template' or obj.status=='confirmed':

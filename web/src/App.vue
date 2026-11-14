@@ -10,6 +10,7 @@ import {
   ChartNoAxesCombined,
   Settings2,
   Wallet,
+  ListChecks,
   ChevronRight,
   Plus,
   ArrowLeft,
@@ -43,6 +44,7 @@ import {
 import FormModal from "./FormModal.vue";
 import RetentionChart from "./RetentionChart.vue";
 import ProductionWorkbench from "./ProductionWorkbench.vue";
+import SeriesBoard from "./SeriesBoard.vue";
 import {
   db,
   connectionError,
@@ -254,6 +256,7 @@ const subpages = {
 };
 const titles = {
   production: "七步制片与首片实录",
+  series: "系列与分集台账",
   dashboard: "项目工作台",
   projects: "视频项目",
   brief: "新建视频项目",
@@ -274,6 +277,7 @@ const titles = {
   library: "全局数字资产库",
 };
 const subtitles = {
+  series: "固定角色、每集独立故事：管住结局类型、跨集线、出镜商品和工时。",
   production: "带着真实样片，把角色、提示词、逐镜审核和剪映交接连起来。",
   dashboard: "从一个好选题，到一条可发布的萌宠视频。",
   brief: "先确定拍给谁看，再让 AI 帮你讲好故事。",
@@ -309,6 +313,7 @@ const projectRequired = computed(
     ![
       "dashboard",
       "production",
+      "series",
       "projects",
       "settings",
       "costs",
@@ -1904,6 +1909,12 @@ onBeforeUnmount(() => {
         >
           <BookOpen />七步制片 <span class="nav-count">1.1</span></button
         ><button
+          :class="{ active: page === 'series' }"
+          @click="nav('series')"
+        >
+          <ListChecks />系列分集
+          <span class="nav-count">{{ list("episode").length }}</span></button
+        ><button
           :class="{
             active: ['projects', 'brief', 'research', 'script'].includes(page),
           }"
@@ -1955,7 +1966,7 @@ onBeforeUnmount(() => {
       </nav>
       <div class="profile">
         <div class="avatar"><PawPrint :size="19" /></div>
-        <div>我的工作室<small>正式版 · v1.1.0</small></div>
+        <div>我的工作室<small>正式版 · v1.2.0</small></div>
         <ShieldCheck :size="18" />
       </div>
     </aside>
@@ -2098,6 +2109,7 @@ onBeforeUnmount(() => {
           </div>
 
           <ProductionWorkbench v-if="page === 'production'" />
+          <SeriesBoard v-if="page === 'series'" />
           <template v-if="page === 'dashboard'">
             <div
               class="panel"
