@@ -1,0 +1,670 @@
+{
+ "key": "biscuit-domino-s1",
+ "name": "Biscuit & Domino",
+ "season": 1,
+ "start_date": "2026-11-30",
+ "positioning": "一只总是慢半拍的猫和一只什么都按计划来的猫，住在同一间宿舍",
+ "world": "只有猫的大学城，不出现人类",
+ "language": "English",
+ "weekly_hours_budget": 12,
+ "brief": {
+  "audience": "18–35 岁，经历过赶课、期末、打工的英语区观众",
+  "emotion": "从紧张到松弛，结尾会心一笑",
+  "platforms": [
+   "YouTube"
+  ],
+  "aspect_ratio": "9:16",
+  "language": "English",
+  "budget_cap": 50,
+  "pause_on_budget": true,
+  "quantity": 1
+ },
+ "subseries": [
+  {
+   "key": "campus",
+   "name": "Campus Chaos",
+   "label": "校园与打工",
+   "frame": "Biscuit 要完成一件校园或打工的事，用自己的方式做，越做越偏"
+  },
+  {
+   "key": "kitchen",
+   "name": "Paw Kitchen",
+   "label": "猫厨与手艺",
+   "frame": "两只猫做一样吃的或手工，Domino 按步骤，Biscuit 自由发挥；过程给足声音和特写"
+  },
+  {
+   "key": "holiday",
+   "name": "Holiday Mode",
+   "label": "节庆与旅行",
+   "frame": "围绕一个节日习俗或一段路程，两只猫的做法对照"
+  }
+ ],
+ "ending_types": [
+  "误会解除",
+  "歪打正着",
+  "搭档救场",
+  "悬念",
+  "翻车",
+  "翻车变新物",
+  "意外成功",
+  "被吃掉",
+  "温情",
+  "反差笑点"
+ ],
+ "threads": [
+  {
+   "key": "late",
+   "name": "迟到梗",
+   "note": "第 1 集以为迟到，第 22 集真的迟到，第 28 集立誓不再迟到"
+  },
+  {
+   "key": "finals",
+   "name": "期末周",
+   "note": "复习计划、图书馆占座、考试，三集连着讲"
+  },
+  {
+   "key": "cafe",
+   "name": "咖啡店打工",
+   "note": "第 12 集入职，第 17 集高峰期"
+  },
+  {
+   "key": "santa",
+   "name": "秘密圣诞老人",
+   "note": "第 11 集抽签留悬念，第 25 集平安夜揭晓"
+  }
+ ],
+ "tiers": {
+  "A": {
+   "label": "A 档 · 完整故事",
+   "duration_min_s": 40,
+   "duration_max_s": 50,
+   "planned_hours": 2.5,
+   "voice": "Biscuit 独白 5–6 句，Domino 1–2 句",
+   "shots": [
+    "钩子",
+    "目标",
+    "阻碍 1",
+    "阻碍 2",
+    "阻碍 3",
+    "阻碍 4",
+    "反转",
+    "收尾"
+   ]
+  },
+  "B": {
+   "label": "B 档 · 轻量集",
+   "duration_min_s": 20,
+   "duration_max_s": 25,
+   "planned_hours": 1.2,
+   "voice": "Biscuit 2–3 句，Domino 最多 1 句",
+   "shots": [
+    "钩子",
+    "过程 1",
+    "过程 2",
+    "反转收尾"
+   ]
+  }
+ },
+ "publish_hours_per_week": 1,
+ "checks": [
+  {
+   "key": "silent_readable",
+   "label": "关掉声音和字幕，只看画面能看懂剧情"
+  },
+  {
+   "key": "hook_3s",
+   "label": "前 3 秒有反常画面或一句话的危机"
+  },
+  {
+   "key": "ending_varies",
+   "label": "结局类型与前两集不同"
+  },
+  {
+   "key": "no_ip",
+   "label": "没有商标、人类、知名 IP 角色、流行歌曲"
+  },
+  {
+   "key": "safe_disclosed",
+   "label": "没有角色受伤、受辱的画面，已勾选 AI 披露"
+  }
+ ],
+ "characters": [
+  {
+   "code": "BISCUIT",
+   "name": "Biscuit",
+   "cn": "饼干",
+   "role": "主角 · 大一学生",
+   "look": "金渐层圆脸猫，M形额纹、琥珀眼、粉鼻、完整猫爪，微圆体型",
+   "outfit": "米色滚边睡衣（宿舍）、米色帆布背包（外出）",
+   "personality": "迷糊、嘴硬、爱吃、做事认真但总跑偏",
+   "voice": "语速快，爱给自己找理由",
+   "gags": "总以为自己迟到；任何计划都会被吃的打断",
+   "never": "不记仇，不欺负别人，不浪费食物",
+   "voiced": true
+  },
+  {
+   "code": "DOMINO",
+   "name": "Domino",
+   "cn": "多米",
+   "role": "固定搭档 · 同寝室友",
+   "look": "黑白奶牛猫，瘦长体型，绿眼，戴圆框眼镜",
+   "outfit": "深蓝色针织背心、灰色双肩包",
+   "personality": "冷静、自律、话少、嘴上嫌弃但会默默帮忙",
+   "voice": "每集最多一两句，陈述语气，负责收尾的那一句",
+   "gags": "什么都有备用方案；用尺子和计时器做一切事",
+   "never": "不大声说话，不当众让 Biscuit 难堪",
+   "voiced": true
+  },
+  {
+   "code": "PROF",
+   "name": "Professor Whiskers",
+   "cn": "教授",
+   "role": "配角",
+   "look": "灰色长毛老猫",
+   "outfit": "",
+   "personality": "只用表情反应",
+   "voice": "",
+   "gags": "",
+   "never": "",
+   "voiced": false
+  },
+  {
+   "code": "BOSS",
+   "name": "Café Manager",
+   "cn": "咖啡店店长",
+   "role": "配角",
+   "look": "橘猫，系围裙",
+   "outfit": "围裙",
+   "personality": "Biscuit 打工线的上司",
+   "voice": "",
+   "gags": "",
+   "never": "",
+   "voiced": false
+  }
+ ],
+ "scenes": [
+  {
+   "code": "DORM",
+   "name": "宿舍"
+  },
+  {
+   "code": "CLASS",
+   "name": "教室"
+  },
+  {
+   "code": "LIB",
+   "name": "图书馆"
+  },
+  {
+   "code": "KITCHEN",
+   "name": "宿舍公共厨房"
+  },
+  {
+   "code": "CAFE",
+   "name": "校门口咖啡店"
+  },
+  {
+   "code": "TRAIN",
+   "name": "火车（第 4 周）"
+  },
+  {
+   "code": "HOME",
+   "name": "老家（第 4 周）"
+  }
+ ],
+ "eligibility": {
+  "as_of": "2026-11-14",
+  "note": "门槛取自公开报道，平台会调整，以 YouTube Studio「创收」页为准",
+  "tiers": [
+   {
+    "key": "shopping",
+    "label": "购物联盟打标（扩展版 YPP）",
+    "subscribers": 500,
+    "shorts_views_90d": 3000000
+   },
+   {
+    "key": "ads",
+    "label": "Shorts 广告分成（完整 YPP）",
+    "subscribers": 1000,
+    "shorts_views_90d": 10000000,
+    "from_2027_02_01_shorts_views_90d": 20000000
+   }
+  ]
+ },
+ "episodes": [
+  {
+   "no": 1,
+   "publish_date": "2026-11-30",
+   "subseries": "campus",
+   "tier": "A",
+   "title": "I Thought I Had an 8AM",
+   "logline": "首片换英文配音和字幕。Biscuit 惊醒赶课，到教室发现是周末，回去补觉",
+   "ending_type": "误会解除",
+   "threads": [
+    "late"
+   ],
+   "product_categories": [
+    "闹钟",
+    "睡衣"
+   ],
+   "scene": "DORM"
+  },
+  {
+   "no": 2,
+   "publish_date": "2026-12-01",
+   "subseries": "kitchen",
+   "tier": "B",
+   "title": "Domino Makes Pancakes. Biscuit \"Helps\".",
+   "logline": "Domino 精确称量做松饼，Biscuit 在旁边偷吃面糊。出锅只够做一个",
+   "ending_type": "被吃掉",
+   "threads": [],
+   "product_categories": [
+    "迷你松饼机"
+   ],
+   "scene": "KITCHEN"
+  },
+  {
+   "no": 3,
+   "publish_date": "2026-12-02",
+   "subseries": "campus",
+   "tier": "B",
+   "title": "The Roommate Agreement",
+   "logline": "Domino 贴出室友守则，Biscuit 逐条当场违反。最后一条「不藏零食」是 Domino 自己违反的",
+   "ending_type": "反差笑点",
+   "threads": [],
+   "product_categories": [
+    "桌面白板",
+    "零食收纳盒"
+   ],
+   "scene": "DORM"
+  },
+  {
+   "no": 4,
+   "publish_date": "2026-12-03",
+   "subseries": "holiday",
+   "tier": "B",
+   "title": "Advent Calendar, Day 3",
+   "logline": "Biscuit 第三天就把 24 格全拆了。Domino 拿出备用的一盒，锁进抽屉",
+   "ending_type": "搭档救场",
+   "threads": [],
+   "product_categories": [
+    "圣诞倒数日历"
+   ],
+   "scene": "DORM"
+  },
+  {
+   "no": 5,
+   "publish_date": "2026-12-04",
+   "subseries": "campus",
+   "tier": "B",
+   "title": "Group Project",
+   "logline": "小组作业只有 Domino 在做，Biscuit 负责画封面。教授只表扬了封面",
+   "ending_type": "歪打正着",
+   "threads": [],
+   "product_categories": [
+    "平板支架",
+    "彩笔"
+   ],
+   "scene": "CLASS"
+  },
+  {
+   "no": 6,
+   "publish_date": "2026-12-05",
+   "subseries": "kitchen",
+   "tier": "A",
+   "title": "Midnight Ramen Heist",
+   "logline": "Biscuit 深夜偷煮泡面，水声、香味、风扇一路升级怕吵醒 Domino。Domino 早就醒了，递过来一个鸡蛋",
+   "ending_type": "温情",
+   "threads": [],
+   "product_categories": [
+    "小电煮锅",
+    "面碗"
+   ],
+   "scene": "DORM"
+  },
+  {
+   "no": 7,
+   "publish_date": "2026-12-06",
+   "subseries": "holiday",
+   "tier": "B",
+   "title": "Decorating the Dorm",
+   "logline": "Biscuit 挂串灯把自己缠成了圣诞树。Domino 顺手在它头上放了颗星星",
+   "ending_type": "反差笑点",
+   "threads": [],
+   "product_categories": [
+    "串灯",
+    "迷你圣诞树"
+   ],
+   "scene": "DORM"
+  },
+  {
+   "no": 8,
+   "publish_date": "2026-12-07",
+   "subseries": "campus",
+   "tier": "A",
+   "title": "Finals Week: The Plan",
+   "logline": "Biscuit 排了完美的复习表，时间被整理桌面、吃东西、小睡一格格吃掉。凌晨只写了标题，留悬念",
+   "ending_type": "悬念",
+   "threads": [
+    "finals"
+   ],
+   "product_categories": [
+    "番茄钟",
+    "台灯"
+   ],
+   "scene": "DORM"
+  },
+  {
+   "no": 9,
+   "publish_date": "2026-12-08",
+   "subseries": "kitchen",
+   "tier": "B",
+   "title": "Brain Food",
+   "logline": "Domino 做补脑三明治，Biscuit 认为越高越补。三明治塔倒了",
+   "ending_type": "翻车",
+   "threads": [],
+   "product_categories": [
+    "三明治机",
+    "便当盒"
+   ],
+   "scene": "KITCHEN"
+  },
+  {
+   "no": 10,
+   "publish_date": "2026-12-09",
+   "subseries": "campus",
+   "tier": "B",
+   "title": "Finals Week: The Library",
+   "logline": "Biscuit 用早餐袋占座，回来发现座位上坐着教授，正在吃那份早餐",
+   "ending_type": "反差笑点",
+   "threads": [
+    "finals"
+   ],
+   "product_categories": [
+    "保温杯",
+    "耳机"
+   ],
+   "scene": "LIB"
+  },
+  {
+   "no": 11,
+   "publish_date": "2026-12-10",
+   "subseries": "holiday",
+   "tier": "B",
+   "title": "Secret Santa",
+   "logline": "两只猫抽到了彼此，各自偷偷观察对方想要什么，都看错了。悬念留到第 25 集",
+   "ending_type": "悬念",
+   "threads": [
+    "santa"
+   ],
+   "product_categories": [
+    "礼品包装纸"
+   ],
+   "scene": "DORM"
+  },
+  {
+   "no": 12,
+   "publish_date": "2026-12-11",
+   "subseries": "campus",
+   "tier": "B",
+   "title": "First Day at the Café",
+   "logline": "Biscuit 咖啡店打工第一天，拉花全是抽象画。客人排队要「艺术款」",
+   "ending_type": "歪打正着",
+   "threads": [
+    "cafe"
+   ],
+   "product_categories": [
+    "拉花杯",
+    "围裙"
+   ],
+   "scene": "CAFE"
+  },
+  {
+   "no": 13,
+   "publish_date": "2026-12-12",
+   "subseries": "kitchen",
+   "tier": "A",
+   "title": "Gingerbread House Disaster",
+   "logline": "Domino 拿尺子搭姜饼屋，Biscuit 边搭边吃承重墙。屋塌了，两只猫把它改成「姜饼遗址」，拿了宿舍创意奖",
+   "ending_type": "翻车变新物",
+   "threads": [],
+   "product_categories": [
+    "姜饼屋套装",
+    "裱花袋"
+   ],
+   "scene": "KITCHEN"
+  },
+  {
+   "no": 14,
+   "publish_date": "2026-12-13",
+   "subseries": "holiday",
+   "tier": "B",
+   "title": "The Ugly Sweater",
+   "logline": "Biscuit 送 Domino 一件圣诞丑毛衣，Domino 拒穿。结尾两只猫同款合影，Domino 面无表情",
+   "ending_type": "反差笑点",
+   "threads": [],
+   "product_categories": [
+    "圣诞毛衣"
+   ],
+   "scene": "DORM"
+  },
+  {
+   "no": 15,
+   "publish_date": "2026-12-14",
+   "subseries": "campus",
+   "tier": "B",
+   "title": "Finals Week: The Exam",
+   "logline": "考场上 Biscuit 只会一道题，把这道题答了三页。成绩单：这题满分，其余空白",
+   "ending_type": "歪打正着",
+   "threads": [
+    "finals"
+   ],
+   "product_categories": [
+    "笔袋",
+    "文具"
+   ],
+   "scene": "CLASS"
+  },
+  {
+   "no": 16,
+   "publish_date": "2026-12-15",
+   "subseries": "kitchen",
+   "tier": "B",
+   "title": "Hot Chocolate, Extra Everything",
+   "logline": "Biscuit 的棉花糖加到看不见杯子。Domino 只说了一句点评",
+   "ending_type": "翻车",
+   "threads": [],
+   "product_categories": [
+    "马克杯",
+    "奶泡器"
+   ],
+   "scene": "KITCHEN"
+  },
+  {
+   "no": 17,
+   "publish_date": "2026-12-16",
+   "subseries": "campus",
+   "tier": "A",
+   "title": "Café Rush Hour",
+   "logline": "圣诞季高峰，Biscuit 一只猫顾店，订单越堆越多。Domino 路过被拉进吧台，两只猫第一次配合成功",
+   "ending_type": "搭档救场",
+   "threads": [
+    "cafe"
+   ],
+   "product_categories": [
+    "手冲壶",
+    "咖啡杯"
+   ],
+   "scene": "CAFE"
+  },
+  {
+   "no": 18,
+   "publish_date": "2026-12-17",
+   "subseries": "holiday",
+   "tier": "B",
+   "title": "Wrapping Presents",
+   "logline": "Domino 包的礼物棱角分明。Biscuit 把自己包进去了",
+   "ending_type": "反差笑点",
+   "threads": [],
+   "product_categories": [
+    "包装纸",
+    "丝带"
+   ],
+   "scene": "DORM"
+  },
+  {
+   "no": 19,
+   "publish_date": "2026-12-18",
+   "subseries": "campus",
+   "tier": "B",
+   "title": "Packing for Home",
+   "logline": "Biscuit 的箱子塞满零食合不上。Domino 的箱子只装了一半，另一半被 Biscuit 征用",
+   "ending_type": "翻车",
+   "threads": [],
+   "product_categories": [
+    "行李箱",
+    "收纳袋"
+   ],
+   "scene": "DORM"
+  },
+  {
+   "no": 20,
+   "publish_date": "2026-12-19",
+   "subseries": "kitchen",
+   "tier": "A",
+   "title": "Christmas Cookies for the Whole Dorm",
+   "logline": "给全楼烤饼干，Biscuit 的造型一盘比一盘离谱，最后一盘烤成了 Domino 的脸。Domino 悄悄收起一块",
+   "ending_type": "温情",
+   "threads": [],
+   "product_categories": [
+    "饼干模具",
+    "烤盘"
+   ],
+   "scene": "KITCHEN"
+  },
+  {
+   "no": 21,
+   "publish_date": "2026-12-20",
+   "subseries": "holiday",
+   "tier": "B",
+   "title": "Letter to Santa",
+   "logline": "Biscuit 的愿望清单长到滚出门外。Domino 的只有一行，是替 Biscuit 许的",
+   "ending_type": "反差笑点",
+   "threads": [],
+   "product_categories": [
+    "圣诞袜",
+    "信纸"
+   ],
+   "scene": "DORM"
+  },
+  {
+   "no": 22,
+   "publish_date": "2026-12-21",
+   "subseries": "holiday",
+   "tier": "A",
+   "title": "The Train Home, Part 1",
+   "logline": "两只猫赶火车回家。Biscuit 又说「来得及」，这次真的迟到，火车开走。留悬念",
+   "ending_type": "悬念",
+   "threads": [
+    "late"
+   ],
+   "product_categories": [
+    "行李箱",
+    "颈枕"
+   ],
+   "scene": "TRAIN"
+  },
+  {
+   "no": 23,
+   "publish_date": "2026-12-22",
+   "subseries": "holiday",
+   "tier": "B",
+   "title": "The Train Home, Part 2",
+   "logline": "换乘慢车，窗外下雪。Biscuit 把零食分给了整节车厢，到站时所有猫跟它挥手",
+   "ending_type": "温情",
+   "threads": [],
+   "product_categories": [
+    "旅行零食盒",
+    "保温杯"
+   ],
+   "scene": "TRAIN"
+  },
+  {
+   "no": 24,
+   "publish_date": "2026-12-23",
+   "subseries": "kitchen",
+   "tier": "B",
+   "title": "Christmas Dinner, Plan B",
+   "logline": "火鸡太大进不了烤箱。两只猫改吃泡面，呼应第 6 集",
+   "ending_type": "翻车变新物",
+   "threads": [],
+   "product_categories": [
+    "烤盘",
+    "厨房温度计"
+   ],
+   "scene": "HOME"
+  },
+  {
+   "no": 25,
+   "publish_date": "2026-12-24",
+   "subseries": "holiday",
+   "tier": "A",
+   "title": "Secret Santa Reveal",
+   "logline": "承接第 11 集。Biscuit 送的是闹钟，Domino 送的是标好「哪天有早八」的周历。两份礼物都是为了让 Biscuit 别再迟到",
+   "ending_type": "误会解除",
+   "threads": [
+    "santa"
+   ],
+   "product_categories": [
+    "闹钟",
+    "周历"
+   ],
+   "scene": "HOME"
+  },
+  {
+   "no": 26,
+   "publish_date": "2026-12-25",
+   "subseries": "holiday",
+   "tier": "B",
+   "title": "Christmas Morning",
+   "logline": "Biscuit 凌晨五点叫醒 Domino 拆礼物。这是它全季唯一一次早起",
+   "ending_type": "反差笑点",
+   "threads": [],
+   "product_categories": [
+    "圣诞袜",
+    "节日睡衣"
+   ],
+   "scene": "HOME"
+  },
+  {
+   "no": 27,
+   "publish_date": "2026-12-26",
+   "subseries": "kitchen",
+   "tier": "B",
+   "title": "Leftover Sandwich",
+   "logline": "剩菜做三明治，Domino 举牌打分。最后一个得了满分，被 Biscuit 抢先吃掉",
+   "ending_type": "被吃掉",
+   "threads": [],
+   "product_categories": [
+    "保鲜盒"
+   ],
+   "scene": "HOME"
+  },
+  {
+   "no": 28,
+   "publish_date": "2026-12-27",
+   "subseries": "campus",
+   "tier": "B",
+   "title": "New Semester Resolutions",
+   "logline": "Biscuit 写下新学期目标「不再迟到」。镜头一转，闹钟响了，它伸爪按掉。季终",
+   "ending_type": "悬念",
+   "threads": [
+    "late"
+   ],
+   "product_categories": [
+    "计划本"
+   ],
+   "scene": "DORM"
+  }
+ ]
+}

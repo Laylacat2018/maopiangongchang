@@ -33,7 +33,7 @@ class Entity(SQLModel):
     deleted_at: Optional[str] = None
     data: dict = Field(default_factory=dict, sa_type=JSON)
 
-KINDS = 'project brief gate_event reference evidence story_direction script shot prompt_version asset asset_version asset_file asset_link platform_subject shot_binding model_profile generation_record candidate review placement edit_package final_cut archive release metric_snapshot retention_point retro file_object cost_entry prompt_template csv_mapping llm_call app_setting task'.split()
+KINDS = 'project brief gate_event reference evidence story_direction script shot prompt_version asset asset_version asset_file asset_link platform_subject shot_binding model_profile generation_record candidate review placement edit_package final_cut archive release metric_snapshot retention_point retro file_object cost_entry prompt_template csv_mapping llm_call app_setting task series episode character scene product'.split()
 MODELS = {name: type(''.join(x.title() for x in name.split('_')), (Entity,), {'__tablename__': name, '__module__': __name__}, table=True) for name in KINDS}
 Index('one_selected_candidate_per_shot', MODELS['candidate'].__table__.c.shot_id, unique=True, sqlite_where=text("status = 'selected' AND deleted_at IS NULL"))
 engine = create_engine('sqlite:///' + str(DATA / 'catstudio.db'), connect_args={'check_same_thread': False, 'timeout': 30})
